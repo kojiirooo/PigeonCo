@@ -17,8 +17,13 @@ public class Pigeon
 {
     public string pigeonID;
 
-
-
-
+    public string pigeonName;
+    public string color;
+    public string breedType;
+    public LifeStage stage;
+    public float hunger;
+    public float bond;
+    public System.DateTime lastFedTime;
+    public float pigeonRating; 
 
 }
