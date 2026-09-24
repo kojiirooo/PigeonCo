@@ -16,7 +16,6 @@ public enum LifeStage
 public class Pigeon 
 {
     public string pigeonID;
-
     public string pigeonName;
     public string color;
     public string breedType;
