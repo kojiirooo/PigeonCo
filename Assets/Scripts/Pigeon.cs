@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering;
+
 
 
 public enum LifeStage
@@ -26,17 +26,18 @@ public class Pigeon
     public float pigeonRating; 
 
 
-    public Pigeon (string id, string name, string color, string breed, LifeStage Stage, float Hunger, float Bond, System.DateTime lastfed, float rating )
+    public Pigeon (string name, string color, string breed, LifeStage Stage)
     {
-        pigeonID = id;
+        pigeonID = System.Guid.NewGuid().ToString();
         pigeonName = name;
         pigeonColor = color;
         breedType = breed;
         stage = Stage;
-        hunger = Hunger;
-        bond = Bond;
-        lastFedTime = lastfed;
-        pigeonRating = rating;
+
+        hunger = 100f;
+        bond = 0f;
+        lastFedTime = System.DateTime.Now;
+        pigeonRating = 0f;
     }
 
 }
