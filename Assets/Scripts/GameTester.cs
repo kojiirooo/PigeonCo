@@ -5,16 +5,17 @@ using UnityEngine;
 public class GameTester : MonoBehaviour
 {
     [SerializeField] private PigeonController pigeonController;
+
     // Start is called before the first frame update
     void Start()
     {
-        Pigeon testPigeon = new Pigeon("Test Name", "White", "Test Breed", LifeStage.Adult);
-        pigeonController.SetupPigeon(testPigeon);   
+        Pigeon starterEgg = new Pigeon("", "Grey", "Common Pigeon", LifeStage.Egg, BreedRarity.Common);
+        pigeonController.SetupPigeon(starterEgg);
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 }

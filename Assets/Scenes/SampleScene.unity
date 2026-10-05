@@ -290,6 +290,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spriteRenderer: {fileID: 1818862634}
+  eggSprite: {fileID: 1831693757, guid: 2280e9b646625d7418a5288c3bad869c, type: 3}
+  chickSprite: {fileID: 1942165019, guid: 2280e9b646625d7418a5288c3bad869c, type: 3}
+  youngSprite: {fileID: -16805063, guid: 2280e9b646625d7418a5288c3bad869c, type: 3}
+  adultSprite: {fileID: 128829842, guid: 2280e9b646625d7418a5288c3bad869c, type: 3}
 --- !u!212 &1818862634
 SpriteRenderer:
   m_ObjectHideFlags: 0
