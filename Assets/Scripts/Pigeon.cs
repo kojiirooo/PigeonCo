@@ -31,7 +31,7 @@ public class Pigeon
     public System.DateTime lastFedTime;
     public float pigeonRating;
     public System.DateTime creationTime;
-    public const float HoursUntilEmpty = 0.02f;
+    public const float HoursUntilEmpty = 8f;
 
 
 
@@ -61,7 +61,7 @@ public class Pigeon
         switch (rarity)
         {
             case BreedRarity.Common:
-                requiredMinutes = 0.1f;
+                requiredMinutes = 2f;
                 break;
             case BreedRarity.Uncommon:
                 requiredMinutes = 4f;
