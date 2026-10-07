@@ -24,6 +24,7 @@ public class PigeonController : MonoBehaviour
     [SerializeField] private GameObject namePopup;
     [SerializeField] private TMP_InputField nameInput;
     [SerializeField] private Button confirmButton;
+    [SerializeField] private Button freeFlyButton;
     [Header("Petting")]
     [SerializeField] private float bondPerPixel = 0.02f;
     [SerializeField] private float tapMoveLimit = 10f;
@@ -35,9 +36,12 @@ public class PigeonController : MonoBehaviour
 
     void Start()
     {
-        namePopup.SetActive(false);
         confirmButton.onClick.AddListener(OnConfirmClicked);
+        freeFlyButton.onClick.AddListener(OnFreeFlyClicked);
+
+        namePopup.SetActive(false);
         hungerBar.gameObject.SetActive(false);
+        freeFlyButton.gameObject.SetActive(false);   
     }
 
     public void SetupPigeon(Pigeon data)
@@ -93,7 +97,7 @@ public class PigeonController : MonoBehaviour
 
     private void OnMouseDown()
     {
-        if (EventSystem.current.IsPointerOverGameObject() || pigeonData.stage == LifeStage.Egg)
+        if (EventSystem.current.IsPointerOverGameObject() || pigeonData.stage == LifeStage.Egg || pigeonData.isAway)
         {
             isPressing = false;
             return;
@@ -152,6 +156,13 @@ public class PigeonController : MonoBehaviour
                 HatchEgg();
             }
         }
+        else if (pigeonData.isAway)
+        {
+            if (pigeonData.IsBackFromFreeFly())
+            {
+                ReturnFromFreeFly();
+            }
+        }
         else
         {
             float currentHunger = pigeonData.GetCurrentHunger();
@@ -167,6 +178,27 @@ public class PigeonController : MonoBehaviour
             {
                 spriteRenderer.color = Color.white;
             }
+
+            freeFlyButton.gameObject.SetActive(pigeonData.CanFreeFly());
         }
     }
+
+    private void OnFreeFlyClicked()
+    {
+        pigeonData.StartFreeFly();
+        freeFlyButton.gameObject.SetActive(false);
+        hungerBar.gameObject.SetActive(false);
+        spriteRenderer.enabled = false;
+        Debug.Log($"{pigeonData.pigeonName} flew away!");
+    }
+
+    private void ReturnFromFreeFly()
+    {
+        pigeonData.ReturnFromFreeFly();
+        spriteRenderer.enabled = true;
+        spriteRenderer.color = Color.white;
+        hungerBar.gameObject.SetActive(true);
+        Debug.Log($"{pigeonData.pigeonName} came back!");
+    }
+
 }

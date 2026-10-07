@@ -34,17 +34,23 @@ public class Pigeon
     public LifeStage stage;
     public BreedRarity rarity;
     public Gender gender;
+    public bool isAway;
+    public bool hasFreeFlown;
+    public System.DateTime returnTime;
     public float hunger;
     public float bond;
     public System.DateTime lastFedTime;
     public float pigeonRating;
     public System.DateTime creationTime;
+
+    //Constants
     public const float HoursUntilEmpty = 0.1f;
     public const float FeedAmount = 40f;
     public const float HungryThreshold = 30f;
     public const float MaxBond = 100f;
     public const float BondToBeYoung = 40f;
     public const float BondToBeAdult = 100f;
+    public const float FreeFlyMinutes = 2f;
 
 
 
@@ -135,5 +141,29 @@ public class Pigeon
         }
 
         return false;
+    }
+
+    public bool CanFreeFly()
+    {
+        return stage == LifeStage.Adult && !hasFreeFlown && !isAway;
+    }
+
+    public void StartFreeFly()
+    {
+        hunger = GetCurrentHunger();
+        isAway = true;
+        hasFreeFlown = true;
+        returnTime = System.DateTime.Now.AddMinutes(FreeFlyMinutes);
+    }
+
+    public bool IsBackFromFreeFly()
+    {
+        return isAway && System.DateTime.Now >= returnTime;
+    }
+
+    public void ReturnFromFreeFly()
+    {
+        isAway = false;
+        lastFedTime = System.DateTime.Now;
     }
 }
