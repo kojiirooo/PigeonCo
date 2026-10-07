@@ -7,6 +7,7 @@ using UnityEngine;
 public class SaveData
 {
     public List<Pigeon> pigeons = new List<Pigeon>();
+    public int coins;
 }
 
 public class SaveManager : MonoBehaviour
@@ -16,6 +17,7 @@ public class SaveManager : MonoBehaviour
         get { return Path.Combine(Application.persistentDataPath, "pigeonco_save.json"); }
     }
 
+    public int loadedCoins;
     public void Save(List<Pigeon> pigeons)
     {
         SaveData data = new SaveData();
@@ -47,6 +49,9 @@ public class SaveManager : MonoBehaviour
             p.RestoreAfterLoad();
         }
 
+
+
+        loadedCoins = data.coins;
         Debug.Log("Loaded " + data.pigeons.Count + " pigeon(s).");
         return data.pigeons;
     }

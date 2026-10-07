@@ -21,6 +21,7 @@ public class GameTester : MonoBehaviour
             {
                 pigeonCollection.AddPigeon(p);
             }
+            pigeonCollection.coins = saveManager.loadedCoins;
             pigeonController.SetupPigeon(loaded[0]);
             if (loaded.Count > 1)
             {
@@ -52,6 +53,21 @@ public class GameTester : MonoBehaviour
             foreach (Pigeon p in pigeonCollection.ownedPigeons)
             {
                 Debug.Log(p.pigeonName + " (" + p.stage + ") can race: " + pigeonCollection.CanRace(p));
+            }
+        }
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            foreach (Pigeon p in pigeonCollection.ownedPigeons)
+            {
+                if (pigeonCollection.CanRace(p))
+                {
+
+                    int place = RaceManager.RunRace(p);
+                    int prize = RaceManager.GetPrize(place);
+                    pigeonCollection.AddCoins(prize);
+                    Debug.Log("Finished in place: " + place);
+                    break;
+                }
             }
         }
     }

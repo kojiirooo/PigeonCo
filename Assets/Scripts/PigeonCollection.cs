@@ -6,6 +6,7 @@ public class PigeonCollection : MonoBehaviour
 {
     public List<Pigeon> ownedPigeons = new List<Pigeon>();
     [SerializeField] private SaveManager saveManager;
+    public int coins;
 
     public void AddPigeon(Pigeon newPigeon)
     {
@@ -61,6 +62,12 @@ public class PigeonCollection : MonoBehaviour
         }
 
         return true;
+    }
+
+    public void AddCoins(int amount)
+    {
+        coins += amount;
+        SaveGame();
     }
 
     public void SaveGame()
