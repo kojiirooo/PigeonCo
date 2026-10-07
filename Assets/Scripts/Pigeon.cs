@@ -36,12 +36,17 @@ public class Pigeon
     public Gender gender;
     public bool isAway;
     public bool hasFreeFlown;
-    public System.DateTime returnTime;
+    [System.NonSerialized] public System.DateTime lastFedTime;
+    [System.NonSerialized] public System.DateTime creationTime;
+    [System.NonSerialized]public System.DateTime returnTime;
+    public string creationTimeText;
+    public string lastFedTimeText;
+    public string returnTimeText;   
     public float hunger;
     public float bond;
-    public System.DateTime lastFedTime;
+    
     public float pigeonRating;
-    public System.DateTime creationTime;
+    
 
     //Constants
     public const float HoursUntilEmpty = 0.1f;
@@ -165,5 +170,19 @@ public class Pigeon
     {
         isAway = false;
         lastFedTime = System.DateTime.Now;
+    }
+
+    public void PrepareForSave()
+    {
+        creationTimeText = creationTime.ToString("o");
+        lastFedTimeText = lastFedTime.ToString("o");
+        returnTimeText = returnTime.ToString("o");
+    }
+
+    public void RestoreAfterLoad()
+    {
+        creationTime = System.DateTime.Parse(creationTimeText, null, System.Globalization.DateTimeStyles.RoundtripKind);
+        lastFedTime = System.DateTime.Parse(lastFedTimeText, null, System.Globalization.DateTimeStyles.RoundtripKind);
+        returnTime = System.DateTime.Parse(returnTimeText, null, System.Globalization.DateTimeStyles.RoundtripKind);
     }
 }

@@ -10,9 +10,13 @@ public class GameTester : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+
         Pigeon starterEgg = new Pigeon("", "Grey", "Common Pigeon", LifeStage.Egg, BreedRarity.Common);
         pigeonCollection.AddPigeon(starterEgg);
         pigeonController.SetupPigeon(starterEgg);
+        SaveManager saveManager = FindObjectOfType<SaveManager>();
+        saveManager.Save(pigeonCollection.ownedPigeons);
+
     }
 
     // Update is called once per frame
