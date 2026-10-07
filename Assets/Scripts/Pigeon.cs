@@ -34,6 +34,9 @@ public class Pigeon
     public const float HoursUntilEmpty = 0.02f;
     public const float FeedAmount = 40f;
     public const float HungryThreshold = 30f;
+    public const float MaxBond = 100f;
+    public const float BondToBeYoung = 40f;
+    public const float BondToBeAdult = 100f;
 
 
 
@@ -52,7 +55,7 @@ public class Pigeon
         lastFedTime = System.DateTime.Now;
         pigeonRating = 0f;
         creationTime = System.DateTime.Now;
-        
+
 
     }
 
@@ -96,5 +99,32 @@ public class Pigeon
     public bool IsHungry()
     {
         return GetCurrentHunger() <= HungryThreshold;
+    }
+
+    public void AddBond(float amount)
+    {
+        if (stage == LifeStage.Egg || IsHungry())
+        {
+            return;
+        }
+
+        bond = Mathf.Min(MaxBond, bond + amount);
+    }
+
+    public bool TryGrow()
+    {
+        if (stage == LifeStage.Chick && bond >= BondToBeYoung)
+        {
+            stage = LifeStage.Young;
+            return true;
+        }
+
+        if (stage == LifeStage.Young && bond >= BondToBeAdult)
+        {
+            stage = LifeStage.Adult;
+            return true;
+        }
+
+        return false;
     }
 }
