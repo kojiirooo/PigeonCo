@@ -7,6 +7,7 @@ public class GameTester : MonoBehaviour
     [SerializeField] private PigeonController pigeonController;
     [SerializeField] private PigeonCollection pigeonCollection;
     [SerializeField] private SaveManager saveManager;
+    [SerializeField] private PigeonController mateController;
 
     void Start()
     {
@@ -19,6 +20,11 @@ public class GameTester : MonoBehaviour
                 pigeonCollection.AddPigeon(p);
             }
             pigeonController.SetupPigeon(loaded[0]);
+            if (loaded.Count > 1)
+            {
+                mateController.SetupPigeon(loaded[1]);
+            }
+
         }
         else
         {

@@ -1,9 +1,10 @@
-using UnityEngine.EventSystems;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+
 
 public class PigeonController : MonoBehaviour
 {
@@ -14,8 +15,10 @@ public class PigeonController : MonoBehaviour
     [SerializeField] private Sprite chickSprite;
     [SerializeField] private Sprite youngSprite;
     [SerializeField] private Sprite adultSprite;
+
     [Header("Debug")]
     [SerializeField] private float debugHunger;
+
     [Header("Hunger Display")]
     [SerializeField] private Slider hungerBar;
     [SerializeField] private Color hungryColor = new Color(0.7f, 0.7f, 0.7f);
@@ -28,10 +31,15 @@ public class PigeonController : MonoBehaviour
     [SerializeField] private TMP_InputField nameInput;
     [SerializeField] private Button confirmButton;
     [SerializeField] private Button freeFlyButton;
+
     [Header("Petting")]
     [SerializeField] private float bondPerPixel = 0.02f;
     [SerializeField] private float tapMoveLimit = 10f;
     [SerializeField] private float debugBond;
+
+    [Header("Role")]
+    [SerializeField] private bool isStarter = true;
+    [SerializeField] private PigeonController mateController;
 
     private bool isPressing;
     private float dragDistance;
@@ -39,44 +47,68 @@ public class PigeonController : MonoBehaviour
 
     void Start()
     {
-        confirmButton.onClick.AddListener(OnConfirmClicked);
-        freeFlyButton.onClick.AddListener(OnFreeFlyClicked);
-
-        namePopup.SetActive(false);
-        hungerBar.gameObject.SetActive(false);
-        freeFlyButton.gameObject.SetActive(false);
+        if (isStarter)
+        {
+            confirmButton.onClick.AddListener(OnConfirmClicked);
+            freeFlyButton.onClick.AddListener(OnFreeFlyClicked);
+            namePopup.SetActive(false);
+            freeFlyButton.gameObject.SetActive(false);
+        }
     }
 
-    public void SetupPigeon(Pigeon data)
+    void Awake()
     {
-        pigeonData = data;
-        Debug.Log($"Pigeon name: {pigeonData.pigeonName}, color : {pigeonData.pigeonColor}, gender : {pigeonData.gender}");
+        pigeonData = null;
+        hungerBar.gameObject.SetActive(false);
 
-        UpdateSprite();
-        if (pigeonData.stage != LifeStage.Egg && !pigeonData.isAway)
-        {
-            hungerBar.gameObject.SetActive(true);
-        }
-
-        if (pigeonData.isAway)
+        if (!isStarter)
         {
             spriteRenderer.enabled = false;
         }
     }
 
+    public void SetupPigeon(Pigeon data)
+    {
+        // IMPORTANT:
+        // Assign the data before trying to access pigeonData.
+        pigeonData = data;
+
+        spriteRenderer.enabled = !pigeonData.isAway;
+
+        Debug.Log(
+            $"Pigeon name: {pigeonData.pigeonName}, " +
+            $"color: {pigeonData.pigeonColor}, " +
+            $"gender: {pigeonData.gender}"
+        );
+
+        UpdateSprite();
+
+        bool showBar = pigeonData.stage != LifeStage.Egg && !pigeonData.isAway;
+        hungerBar.gameObject.SetActive(showBar);
+        spriteRenderer.enabled = !pigeonData.isAway;
+    }
+
     private void UpdateSprite()
     {
+        if (pigeonData == null)
+        {
+            return;
+        }
+
         switch (pigeonData.stage)
         {
             case LifeStage.Egg:
                 spriteRenderer.sprite = eggSprite;
                 break;
+
             case LifeStage.Chick:
                 spriteRenderer.sprite = chickSprite;
                 break;
+
             case LifeStage.Young:
                 spriteRenderer.sprite = youngSprite;
                 break;
+
             case LifeStage.Adult:
                 spriteRenderer.sprite = adultSprite;
                 break;
@@ -88,9 +120,17 @@ public class PigeonController : MonoBehaviour
         pigeonData.stage = LifeStage.Chick;
         pigeonData.hunger = 100f;
         pigeonData.lastFedTime = System.DateTime.Now;
+
         UpdateSprite();
-        namePopup.SetActive(true);
+
+        // Only the starter pigeon should use the naming popup.
+        if (isStarter)
+        {
+            namePopup.SetActive(true);
+        }
+
         hungerBar.gameObject.SetActive(true);
+
         pigeonCollection.SaveGame();
     }
 
@@ -100,18 +140,43 @@ public class PigeonController : MonoBehaviour
 
         if (typedName == "")
         {
-            return; // don't accept an empty name
+            return;
         }
 
         pigeonData.pigeonName = typedName;
+
         namePopup.SetActive(false);
+
         pigeonCollection.SaveGame();
+
         Debug.Log($"Pigeon named: {pigeonData.pigeonName}");
     }
 
     private void OnMouseDown()
     {
-        if (EventSystem.current.IsPointerOverGameObject() || pigeonData.stage == LifeStage.Egg || pigeonData.isAway)
+        // Don't interact if there is no pigeon data.
+        if (pigeonData == null)
+        {
+            isPressing = false;
+            return;
+        }
+
+        // Don't interact when clicking UI.
+        if (EventSystem.current.IsPointerOverGameObject())
+        {
+            isPressing = false;
+            return;
+        }
+
+        // Eggs cannot be fed/petted yet.
+        if (pigeonData.stage == LifeStage.Egg)
+        {
+            isPressing = false;
+            return;
+        }
+
+        // Away pigeons cannot be interacted with.
+        if (pigeonData.isAway)
         {
             isPressing = false;
             return;
@@ -124,14 +189,20 @@ public class PigeonController : MonoBehaviour
 
     private void OnMouseDrag()
     {
-        if (!isPressing)
+        if (!isPressing || pigeonData == null)
         {
             return;
         }
 
         Vector3 currentMousePosition = Input.mousePosition;
-        float moved = Vector3.Distance(currentMousePosition, lastMousePosition);
+
+        float moved = Vector3.Distance(
+            currentMousePosition,
+            lastMousePosition
+        );
+
         lastMousePosition = currentMousePosition;
+
         dragDistance += moved;
 
         if (dragDistance > tapMoveLimit)
@@ -147,19 +218,26 @@ public class PigeonController : MonoBehaviour
 
     private void OnMouseUp()
     {
-        if (!isPressing)
+        if (!isPressing || pigeonData == null)
         {
             return;
         }
 
         isPressing = false;
 
+        // Small click = feed
         if (dragDistance <= tapMoveLimit)
         {
             pigeonData.Feed();
-            Debug.Log($"Fed {pigeonData.pigeonName}. Hunger is now {pigeonData.GetCurrentHunger()}");
+
+            Debug.Log(
+                $"Fed {pigeonData.pigeonName}. " +
+                $"Hunger is now {pigeonData.GetCurrentHunger()}"
+            );
+
             pigeonCollection.SaveGame();
         }
+        // Drag = pet
         else
         {
             pigeonCollection.SaveGame();
@@ -168,6 +246,15 @@ public class PigeonController : MonoBehaviour
 
     void Update()
     {
+        // Mate-test starts with no data.
+        if (pigeonData == null)
+        {
+            return;
+        }
+
+        // =========================
+        // EGG
+        // =========================
         if (pigeonData.stage == LifeStage.Egg)
         {
             if (pigeonData.IsReadyToHatch())
@@ -175,6 +262,10 @@ public class PigeonController : MonoBehaviour
                 HatchEgg();
             }
         }
+
+        // =========================
+        // AWAY / FREE FLYING
+        // =========================
         else if (pigeonData.isAway)
         {
             if (pigeonData.IsBackFromFreeFly())
@@ -182,13 +273,20 @@ public class PigeonController : MonoBehaviour
                 ReturnFromFreeFly();
             }
         }
+
+        // =========================
+        // ACTIVE PIGEON
+        // =========================
         else
         {
             float currentHunger = pigeonData.GetCurrentHunger();
+
             debugHunger = currentHunger;
             debugBond = pigeonData.bond;
+
             hungerBar.value = currentHunger;
 
+            // Change color when hungry.
             if (pigeonData.IsHungry())
             {
                 spriteRenderer.color = hungryColor;
@@ -198,40 +296,72 @@ public class PigeonController : MonoBehaviour
                 spriteRenderer.color = Color.white;
             }
 
-            freeFlyButton.gameObject.SetActive(pigeonData.CanFreeFly());
+            // ONLY THE STARTER CONTROLS THE SHARED FREE FLY BUTTON.
+            if (isStarter)
+            {
+                freeFlyButton.gameObject.SetActive(
+                    pigeonData.CanFreeFly()
+                );
+            }
         }
     }
 
     private void OnFreeFlyClicked()
     {
+        // Safety check.
+        if (pigeonData == null)
+        {
+            return;
+        }
+
         pigeonData.StartFreeFly();
+
         freeFlyButton.gameObject.SetActive(false);
         hungerBar.gameObject.SetActive(false);
         spriteRenderer.enabled = false;
+
         Debug.Log($"{pigeonData.pigeonName} flew away!");
+
         pigeonCollection.SaveGame();
     }
 
     private void ReturnFromFreeFly()
     {
         pigeonData.ReturnFromFreeFly();
+
         spriteRenderer.enabled = true;
         spriteRenderer.color = Color.white;
+
         hungerBar.gameObject.SetActive(true);
+
         Debug.Log($"{pigeonData.pigeonName} came back!");
-        BringMate();     
+
+        // When the starter pigeon comes back,
+        // bring its mate with it.
+        BringMate();
+
         pigeonCollection.SaveGame();
     }
 
     private void BringMate()
     {
+        // Don't create another mate if this pigeon
+        // already has one.
         if (!string.IsNullOrWhiteSpace(pigeonData.mateID))
         {
             return;
         }
 
-        Pigeon mate = new Pigeon("Mate", "Brown", "Common Pigeon", LifeStage.Adult, BreedRarity.Common);
+        // Create the mate.
+        Pigeon mate = new Pigeon(
+            "Mate",
+            "Brown",
+            "Common Pigeon",
+            LifeStage.Adult,
+            BreedRarity.Common
+        );
 
+        // Give the mate the opposite gender.
         if (pigeonData.gender == Gender.Male)
         {
             mate.gender = Gender.Female;
@@ -241,12 +371,33 @@ public class PigeonController : MonoBehaviour
             mate.gender = Gender.Male;
         }
 
+        // Give the mate max bond.
         mate.bond = Pigeon.MaxBond;
+
+        // Mark the mate as having free-flown before.
         mate.hasFreeFlown = true;
+
+        // Connect the two pigeons.
         mate.mateID = pigeonData.pigeonID;
         pigeonData.mateID = mate.pigeonID;
 
+        // Save the new mate.
         pigeonCollection.AddPigeon(mate);
-        Debug.Log($"A {mate.gender} mate arrived for {pigeonData.pigeonName}!");
+
+        // Show the mate in the Mate-test GameObject.
+        if (mateController != null)
+        {
+            mateController.SetupPigeon(mate);
+        }
+        else
+        {
+            Debug.LogWarning(
+                "Mate Controller is not assigned on the starter pigeon!"
+            );
+        }
+
+        Debug.Log(
+            $"A {mate.gender} mate arrived for {pigeonData.pigeonName}!"
+        );
     }
 }
