@@ -13,6 +13,8 @@ public class PigeonController : MonoBehaviour
     [SerializeField] private Sprite chickSprite;
     [SerializeField] private Sprite youngSprite;
     [SerializeField] private Sprite adultSprite;
+    [Header("Debug")]
+    [SerializeField] private float debugHunger;
 
     [Header("Naming Popup")]
     [SerializeField] private GameObject namePopup;
@@ -55,6 +57,8 @@ public class PigeonController : MonoBehaviour
     private void HatchEgg()
     {
         pigeonData.stage = LifeStage.Chick;
+        pigeonData.hunger = 100f;
+        pigeonData.lastFedTime = System.DateTime.Now;
         UpdateSprite();
         namePopup.SetActive(true);
     }
@@ -75,9 +79,16 @@ public class PigeonController : MonoBehaviour
 
     void Update()
     {
-        if (pigeonData.stage == LifeStage.Egg && pigeonData.IsReadyToHatch())
+        if (pigeonData.stage == LifeStage.Egg)
         {
-            HatchEgg();
+            if (pigeonData.IsReadyToHatch())
+            {
+                HatchEgg();
+            }
+        }
+        else
+        {
+            debugHunger = pigeonData.GetCurrentHunger();
         }
     }
 }

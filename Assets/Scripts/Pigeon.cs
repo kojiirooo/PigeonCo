@@ -31,6 +31,7 @@ public class Pigeon
     public System.DateTime lastFedTime;
     public float pigeonRating;
     public System.DateTime creationTime;
+    public const float HoursUntilEmpty = 0.02f;
 
 
 
@@ -60,7 +61,7 @@ public class Pigeon
         switch (rarity)
         {
             case BreedRarity.Common:
-                requiredMinutes = 2f;
+                requiredMinutes = 0.1f;
                 break;
             case BreedRarity.Uncommon:
                 requiredMinutes = 4f;
@@ -74,5 +75,12 @@ public class Pigeon
         // to return true or false
         System.DateTime hatchTime = creationTime.AddMinutes(requiredMinutes);
         return System.DateTime.Now >= hatchTime;
+    }
+
+    public float GetCurrentHunger()
+    {
+        double hoursPassed = (System.DateTime.Now - lastFedTime).TotalHours;
+        float hungerLost = (float)(hoursPassed / HoursUntilEmpty) * 100f;
+        return Mathf.Max(0f, hunger - hungerLost);
     }
 }
