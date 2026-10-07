@@ -6,22 +6,26 @@ public class GameTester : MonoBehaviour
 {
     [SerializeField] private PigeonController pigeonController;
     [SerializeField] private PigeonCollection pigeonCollection;
+    [SerializeField] private SaveManager saveManager;
 
-    // Start is called before the first frame update
     void Start()
     {
+        List<Pigeon> loaded = saveManager.Load();
 
-        Pigeon starterEgg = new Pigeon("", "Grey", "Common Pigeon", LifeStage.Egg, BreedRarity.Common);
-        pigeonCollection.AddPigeon(starterEgg);
-        pigeonController.SetupPigeon(starterEgg);
-        SaveManager saveManager = FindObjectOfType<SaveManager>();
-        saveManager.Save(pigeonCollection.ownedPigeons);
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
+        if (loaded != null && loaded.Count > 0)
+        {
+            foreach (Pigeon p in loaded)
+            {
+                pigeonCollection.AddPigeon(p);
+            }
+            pigeonController.SetupPigeon(loaded[0]);
+        }
+        else
+        {
+            Pigeon starterEgg = new Pigeon("", "Grey", "Common Pigeon", LifeStage.Egg, BreedRarity.Common);
+            pigeonCollection.AddPigeon(starterEgg);
+            pigeonController.SetupPigeon(starterEgg);
+            pigeonCollection.SaveGame();
+        }
     }
 }

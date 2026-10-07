@@ -55,7 +55,7 @@ public class Pigeon
     public const float MaxBond = 100f;
     public const float BondToBeYoung = 40f;
     public const float BondToBeAdult = 100f;
-    public const float FreeFlyMinutes = 2f;
+    public const float FreeFlyMinutes = 0.1f;
 
 
 

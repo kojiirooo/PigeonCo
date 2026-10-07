@@ -20,6 +20,9 @@ public class PigeonController : MonoBehaviour
     [SerializeField] private Slider hungerBar;
     [SerializeField] private Color hungryColor = new Color(0.7f, 0.7f, 0.7f);
 
+    [Header("Saving")]
+    [SerializeField] private PigeonCollection pigeonCollection;
+
     [Header("Naming Popup")]
     [SerializeField] private GameObject namePopup;
     [SerializeField] private TMP_InputField nameInput;
@@ -50,6 +53,15 @@ public class PigeonController : MonoBehaviour
         Debug.Log($"Pigeon name: {pigeonData.pigeonName}, color : {pigeonData.pigeonColor}, gender : {pigeonData.gender}");
 
         UpdateSprite();
+        if (pigeonData.stage != LifeStage.Egg && !pigeonData.isAway)
+        {
+            hungerBar.gameObject.SetActive(true);
+        }
+
+        if (pigeonData.isAway)
+        {
+            spriteRenderer.enabled = false;
+        }
     }
 
     private void UpdateSprite()
@@ -79,6 +91,7 @@ public class PigeonController : MonoBehaviour
         UpdateSprite();
         namePopup.SetActive(true);
         hungerBar.gameObject.SetActive(true);
+        pigeonCollection.SaveGame();
     }
 
     private void OnConfirmClicked()
@@ -92,6 +105,7 @@ public class PigeonController : MonoBehaviour
 
         pigeonData.pigeonName = typedName;
         namePopup.SetActive(false);
+        pigeonCollection.SaveGame();
         Debug.Log($"Pigeon named: {pigeonData.pigeonName}");
     }
 
@@ -144,6 +158,11 @@ public class PigeonController : MonoBehaviour
         {
             pigeonData.Feed();
             Debug.Log($"Fed {pigeonData.pigeonName}. Hunger is now {pigeonData.GetCurrentHunger()}");
+            pigeonCollection.SaveGame();
+        }
+        else
+        {
+            pigeonCollection.SaveGame();
         }
     }
 
@@ -190,6 +209,7 @@ public class PigeonController : MonoBehaviour
         hungerBar.gameObject.SetActive(false);
         spriteRenderer.enabled = false;
         Debug.Log($"{pigeonData.pigeonName} flew away!");
+        pigeonCollection.SaveGame();
     }
 
     private void ReturnFromFreeFly()
@@ -199,6 +219,7 @@ public class PigeonController : MonoBehaviour
         spriteRenderer.color = Color.white;
         hungerBar.gameObject.SetActive(true);
         Debug.Log($"{pigeonData.pigeonName} came back!");
+        pigeonCollection.SaveGame();
     }
 
 }
