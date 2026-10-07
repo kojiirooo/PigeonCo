@@ -43,7 +43,7 @@ public class PigeonController : MonoBehaviour
     public void SetupPigeon(Pigeon data)
     {
         pigeonData = data;
-        Debug.Log($"Pigeon name: {pigeonData.pigeonName}, color : {pigeonData.pigeonColor}");
+        Debug.Log($"Pigeon name: {pigeonData.pigeonName}, color : {pigeonData.pigeonColor}, gender : {pigeonData.gender}");
 
         UpdateSprite();
     }

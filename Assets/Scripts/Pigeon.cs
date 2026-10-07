@@ -18,6 +18,12 @@ public enum BreedRarity
     Rare
 }
 
+public enum Gender
+{
+    Male,
+    Female
+}
+
 public class Pigeon
 {
     public string pigeonID;
@@ -26,12 +32,13 @@ public class Pigeon
     public string breedType;
     public LifeStage stage;
     public BreedRarity rarity;
+    public Gender gender;
     public float hunger;
     public float bond;
     public System.DateTime lastFedTime;
     public float pigeonRating;
     public System.DateTime creationTime;
-    public const float HoursUntilEmpty = 0.02f;
+    public const float HoursUntilEmpty = 8f;
     public const float FeedAmount = 40f;
     public const float HungryThreshold = 30f;
     public const float MaxBond = 100f;
@@ -55,6 +62,7 @@ public class Pigeon
         lastFedTime = System.DateTime.Now;
         pigeonRating = 0f;
         creationTime = System.DateTime.Now;
+        gender = (Gender)UnityEngine.Random.Range(0, 2);
 
 
     }
@@ -66,7 +74,7 @@ public class Pigeon
         switch (rarity)
         {
             case BreedRarity.Common:
-                requiredMinutes = 0.1f;
+                requiredMinutes = 2f;
                 break;
             case BreedRarity.Uncommon:
                 requiredMinutes = 4f;
