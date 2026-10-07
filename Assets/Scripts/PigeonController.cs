@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class PigeonController : MonoBehaviour
 {
@@ -11,6 +13,17 @@ public class PigeonController : MonoBehaviour
     [SerializeField] private Sprite chickSprite;
     [SerializeField] private Sprite youngSprite;
     [SerializeField] private Sprite adultSprite;
+
+    [Header("Naming Popup")]
+    [SerializeField] private GameObject namePopup;
+    [SerializeField] private TMP_InputField nameInput;
+    [SerializeField] private Button confirmButton;
+
+    void Start()
+    {
+        namePopup.SetActive(false);
+        confirmButton.onClick.AddListener(OnConfirmClicked);
+    }
 
     public void SetupPigeon(Pigeon data)
     {
@@ -39,19 +52,32 @@ public class PigeonController : MonoBehaviour
         }
     }
 
-    // Start is called before the first frame update
-    void Start()
+    private void HatchEgg()
     {
-
+        pigeonData.stage = LifeStage.Chick;
+        UpdateSprite();
+        namePopup.SetActive(true);
     }
 
-    // Update is called once per frame
+    private void OnConfirmClicked()
+    {
+        string typedName = nameInput.text.Trim();
+
+        if (typedName == "")
+        {
+            return; // don't accept an empty name
+        }
+
+        pigeonData.pigeonName = typedName;
+        namePopup.SetActive(false);
+        Debug.Log($"Pigeon named: {pigeonData.pigeonName}");
+    }
+
     void Update()
     {
         if (pigeonData.stage == LifeStage.Egg && pigeonData.IsReadyToHatch())
         {
-            pigeonData.stage = LifeStage.Chick;
-            UpdateSprite();
+            HatchEgg();
         }
     }
 }
