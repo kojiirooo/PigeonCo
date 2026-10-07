@@ -24,6 +24,7 @@ public enum Gender
     Female
 }
 
+[System.Serializable]
 public class Pigeon
 {
     public string pigeonID;
@@ -38,7 +39,7 @@ public class Pigeon
     public System.DateTime lastFedTime;
     public float pigeonRating;
     public System.DateTime creationTime;
-    public const float HoursUntilEmpty = 8f;
+    public const float HoursUntilEmpty = 0.1f;
     public const float FeedAmount = 40f;
     public const float HungryThreshold = 30f;
     public const float MaxBond = 100f;
@@ -74,7 +75,7 @@ public class Pigeon
         switch (rarity)
         {
             case BreedRarity.Common:
-                requiredMinutes = 2f;
+                requiredMinutes = 0.1f;
                 break;
             case BreedRarity.Uncommon:
                 requiredMinutes = 4f;
