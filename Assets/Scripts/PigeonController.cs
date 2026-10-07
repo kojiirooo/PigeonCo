@@ -24,6 +24,14 @@ public class PigeonController : MonoBehaviour
     [SerializeField] private GameObject namePopup;
     [SerializeField] private TMP_InputField nameInput;
     [SerializeField] private Button confirmButton;
+    [Header("Petting")]
+    [SerializeField] private float bondPerPixel = 0.02f;
+    [SerializeField] private float tapMoveLimit = 10f;
+    [SerializeField] private float debugBond;
+
+    private bool isPressing;
+    private float dragDistance;
+    private Vector3 lastMousePosition;
 
     void Start()
     {
@@ -85,18 +93,54 @@ public class PigeonController : MonoBehaviour
 
     private void OnMouseDown()
     {
-        if (EventSystem.current.IsPointerOverGameObject())
+        if (EventSystem.current.IsPointerOverGameObject() || pigeonData.stage == LifeStage.Egg)
+        {
+            isPressing = false;
+            return;
+        }
+
+        isPressing = true;
+        dragDistance = 0f;
+        lastMousePosition = Input.mousePosition;
+    }
+
+    private void OnMouseDrag()
+    {
+        if (!isPressing)
         {
             return;
         }
 
-        if (pigeonData.stage == LifeStage.Egg)
+        Vector3 currentMousePosition = Input.mousePosition;
+        float moved = Vector3.Distance(currentMousePosition, lastMousePosition);
+        lastMousePosition = currentMousePosition;
+        dragDistance += moved;
+
+        if (dragDistance > tapMoveLimit)
+        {
+            pigeonData.AddBond(moved * bondPerPixel);
+
+            if (pigeonData.TryGrow())
+            {
+                UpdateSprite();
+            }
+        }
+    }
+
+    private void OnMouseUp()
+    {
+        if (!isPressing)
         {
             return;
         }
 
-        pigeonData.Feed();
-        Debug.Log($"Fed {pigeonData.pigeonName}. Hunger is now {pigeonData.GetCurrentHunger()}");
+        isPressing = false;
+
+        if (dragDistance <= tapMoveLimit)
+        {
+            pigeonData.Feed();
+            Debug.Log($"Fed {pigeonData.pigeonName}. Hunger is now {pigeonData.GetCurrentHunger()}");
+        }
     }
 
     void Update()
@@ -112,6 +156,7 @@ public class PigeonController : MonoBehaviour
         {
             float currentHunger = pigeonData.GetCurrentHunger();
             debugHunger = currentHunger;
+            debugBond = pigeonData.bond;
             hungerBar.value = currentHunger;
 
             if (pigeonData.IsHungry())
