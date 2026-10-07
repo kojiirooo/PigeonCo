@@ -8,6 +8,8 @@ public class GameTester : MonoBehaviour
     [SerializeField] private PigeonCollection pigeonCollection;
     [SerializeField] private SaveManager saveManager;
     [SerializeField] private PigeonController mateController;
+    [SerializeField] private PigeonController nursery1;
+    [SerializeField] private PigeonController nursery2;
 
     void Start()
     {
@@ -24,6 +26,14 @@ public class GameTester : MonoBehaviour
             {
                 mateController.SetupPigeon(loaded[1]);
             }
+            if (loaded.Count > 2)
+            {
+                nursery1.SetupPigeon(loaded[2]);
+            }
+            if (loaded.Count > 3)
+            {
+                nursery2.SetupPigeon(loaded[3]);
+            }
 
         }
         else
@@ -34,4 +44,5 @@ public class GameTester : MonoBehaviour
             pigeonCollection.SaveGame();
         }
     }
+
 }

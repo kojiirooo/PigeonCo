@@ -41,6 +41,8 @@ public class PigeonController : MonoBehaviour
     [Header("Role")]
     [SerializeField] private bool isStarter = true;
     [SerializeField] private PigeonController mateController;
+    [SerializeField] private PigeonController nursery1;
+    [SerializeField] private PigeonController nursery2;
 
     private bool isPressing;
     private float dragDistance;
@@ -414,6 +416,12 @@ public class PigeonController : MonoBehaviour
         if (pigeonData.CanBreedWith(mate))
         {
             pigeonCollection.Breed(pigeonData, mate);
+
+            // The 2 new eggs are the last 2 in the collection.
+            int count = pigeonCollection.ownedPigeons.Count;
+            nursery1.SetupPigeon(pigeonCollection.ownedPigeons[count - 2]);
+            nursery2.SetupPigeon(pigeonCollection.ownedPigeons[count - 1]);
+            
             breedButton.gameObject.SetActive(false);
             Debug.Log("Breeding complete: 2 eggs added.");
         }
