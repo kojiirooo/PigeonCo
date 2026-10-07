@@ -46,30 +46,6 @@ public class GameTester : MonoBehaviour
         }
     }
 
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            foreach (Pigeon p in pigeonCollection.ownedPigeons)
-            {
-                Debug.Log(p.pigeonName + " (" + p.stage + ") can race: " + pigeonCollection.CanRace(p));
-            }
-        }
-        if (Input.GetKeyDown(KeyCode.T))
-        {
-            foreach (Pigeon p in pigeonCollection.ownedPigeons)
-            {
-                if (pigeonCollection.CanRace(p))
-                {
-
-                    int place = RaceManager.RunRace(p);
-                    int prize = RaceManager.GetPrize(place);
-                    pigeonCollection.AddCoins(prize);
-                    Debug.Log("Finished in place: " + place);
-                    break;
-                }
-            }
-        }
-    }
+    
 
 }

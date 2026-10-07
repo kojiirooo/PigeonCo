@@ -134,6 +134,11 @@ public class PigeonController : MonoBehaviour
         {
             namePopup.SetActive(true);
         }
+        else
+        {
+            int number = pigeonCollection.ownedPigeons.IndexOf(pigeonData) + 1;
+            pigeonData.pigeonName = "Pigeon " + number;
+        }
 
         hungerBar.gameObject.SetActive(true);
 
