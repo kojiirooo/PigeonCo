@@ -44,7 +44,7 @@ public class PigeonController : MonoBehaviour
 
         namePopup.SetActive(false);
         hungerBar.gameObject.SetActive(false);
-        freeFlyButton.gameObject.SetActive(false);   
+        freeFlyButton.gameObject.SetActive(false);
     }
 
     public void SetupPigeon(Pigeon data)
@@ -219,7 +219,34 @@ public class PigeonController : MonoBehaviour
         spriteRenderer.color = Color.white;
         hungerBar.gameObject.SetActive(true);
         Debug.Log($"{pigeonData.pigeonName} came back!");
+        BringMate();     
         pigeonCollection.SaveGame();
     }
 
+    private void BringMate()
+    {
+        if (!string.IsNullOrWhiteSpace(pigeonData.mateID))
+        {
+            return;
+        }
+
+        Pigeon mate = new Pigeon("Mate", "Brown", "Common Pigeon", LifeStage.Adult, BreedRarity.Common);
+
+        if (pigeonData.gender == Gender.Male)
+        {
+            mate.gender = Gender.Female;
+        }
+        else
+        {
+            mate.gender = Gender.Male;
+        }
+
+        mate.bond = Pigeon.MaxBond;
+        mate.hasFreeFlown = true;
+        mate.mateID = pigeonData.pigeonID;
+        pigeonData.mateID = mate.pigeonID;
+
+        pigeonCollection.AddPigeon(mate);
+        Debug.Log($"A {mate.gender} mate arrived for {pigeonData.pigeonName}!");
+    }
 }

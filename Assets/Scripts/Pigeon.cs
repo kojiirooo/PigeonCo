@@ -36,6 +36,7 @@ public class Pigeon
     public Gender gender;
     public bool isAway;
     public bool hasFreeFlown;
+    public string mateID = "";
     [System.NonSerialized] public System.DateTime lastFedTime;
     [System.NonSerialized] public System.DateTime creationTime;
     [System.NonSerialized]public System.DateTime returnTime;
@@ -185,4 +186,6 @@ public class Pigeon
         lastFedTime = System.DateTime.Parse(lastFedTimeText, null, System.Globalization.DateTimeStyles.RoundtripKind);
         returnTime = System.DateTime.Parse(returnTimeText, null, System.Globalization.DateTimeStyles.RoundtripKind);
     }
+
+
 }

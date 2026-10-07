@@ -533,6 +533,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ownedPigeons: []
+  saveManager: {fileID: 1910773585}
 --- !u!4 &314647272
 Transform:
   m_ObjectHideFlags: 0
@@ -1631,6 +1632,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pigeonController: {fileID: 1818862633}
   pigeonCollection: {fileID: 314647271}
+  saveManager: {fileID: 1910773585}
 --- !u!1 &1487027411
 GameObject:
   m_ObjectHideFlags: 0
@@ -2067,6 +2069,7 @@ MonoBehaviour:
     gender: 0
     isAway: 0
     hasFreeFlown: 0
+    mateID: 
     creationTimeText: 
     lastFedTimeText: 
     returnTimeText: 
@@ -2081,6 +2084,7 @@ MonoBehaviour:
   debugHunger: 0
   hungerBar: {fileID: 311543191}
   hungryColor: {r: 0.7, g: 0.7, b: 0.7, a: 1}
+  pigeonCollection: {fileID: 314647271}
   namePopup: {fileID: 1822266363}
   nameInput: {fileID: 1249823665}
   confirmButton: {fileID: 1255747447}
