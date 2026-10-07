@@ -152,6 +152,23 @@ public class Pigeon
         return false;
     }
 
+    public float GetRating()
+    {
+        float rarityPoints = 10f;
+
+        switch (rarity)
+        {
+            case BreedRarity.Uncommon:
+                rarityPoints = 20f;
+                break;
+            case BreedRarity.Rare:
+                rarityPoints = 30f;
+                break;
+        }
+
+        return rarityPoints + (bond * 0.5f);
+    }
+
     public bool CanFreeFly()
     {
         return stage == LifeStage.Adult && !hasFreeFlown && !isAway;
@@ -178,6 +195,7 @@ public class Pigeon
 
     public void PrepareForSave()
     {
+        pigeonRating = GetRating();
         creationTimeText = creationTime.ToString("o");
         lastFedTimeText = lastFedTime.ToString("o");
         returnTimeText = returnTime.ToString("o");

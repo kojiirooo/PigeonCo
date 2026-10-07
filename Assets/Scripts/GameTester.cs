@@ -45,4 +45,15 @@ public class GameTester : MonoBehaviour
         }
     }
 
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            foreach (Pigeon p in pigeonCollection.ownedPigeons)
+            {
+                Debug.Log(p.pigeonName + " (" + p.stage + ") can race: " + pigeonCollection.CanRace(p));
+            }
+        }
+    }
+
 }

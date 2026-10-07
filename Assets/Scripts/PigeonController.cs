@@ -37,6 +37,7 @@ public class PigeonController : MonoBehaviour
     [SerializeField] private float bondPerPixel = 0.02f;
     [SerializeField] private float tapMoveLimit = 10f;
     [SerializeField] private float debugBond;
+    [SerializeField] private float debugRating;
 
     [Header("Role")]
     [SerializeField] private bool isStarter = true;
@@ -288,6 +289,7 @@ public class PigeonController : MonoBehaviour
 
             debugHunger = currentHunger;
             debugBond = pigeonData.bond;
+            debugRating = pigeonData.GetRating();
 
             hungerBar.value = currentHunger;
 

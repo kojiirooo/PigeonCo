@@ -37,6 +37,32 @@ public class PigeonCollection : MonoBehaviour
         b.hasBred = true;
         SaveGame();
     }
+
+    public bool CanRace(Pigeon p)
+    {
+        // Only adults that are home can race.
+        if (p.stage != LifeStage.Adult || p.isAway)
+        {
+            return false;
+        }
+
+        // A parent can't race until all of its chicks are Young or older.
+        foreach (Pigeon other in ownedPigeons)
+        {
+            bool isChildOfP = other.parentAID == p.pigeonID || other.parentBID == p.pigeonID;
+
+            if (isChildOfP)
+            {
+                if (other.stage != LifeStage.Young && other.stage != LifeStage.Adult)
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
     public void SaveGame()
     {
         saveManager.Save(ownedPigeons);
