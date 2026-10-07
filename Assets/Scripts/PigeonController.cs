@@ -1,3 +1,4 @@
+using UnityEngine.EventSystems;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,6 +16,9 @@ public class PigeonController : MonoBehaviour
     [SerializeField] private Sprite adultSprite;
     [Header("Debug")]
     [SerializeField] private float debugHunger;
+    [Header("Hunger Display")]
+    [SerializeField] private Slider hungerBar;
+    [SerializeField] private Color hungryColor = new Color(0.7f, 0.7f, 0.7f);
 
     [Header("Naming Popup")]
     [SerializeField] private GameObject namePopup;
@@ -25,6 +29,7 @@ public class PigeonController : MonoBehaviour
     {
         namePopup.SetActive(false);
         confirmButton.onClick.AddListener(OnConfirmClicked);
+        hungerBar.gameObject.SetActive(false);
     }
 
     public void SetupPigeon(Pigeon data)
@@ -61,6 +66,7 @@ public class PigeonController : MonoBehaviour
         pigeonData.lastFedTime = System.DateTime.Now;
         UpdateSprite();
         namePopup.SetActive(true);
+        hungerBar.gameObject.SetActive(true);
     }
 
     private void OnConfirmClicked()
@@ -77,6 +83,22 @@ public class PigeonController : MonoBehaviour
         Debug.Log($"Pigeon named: {pigeonData.pigeonName}");
     }
 
+    private void OnMouseDown()
+    {
+        if (EventSystem.current.IsPointerOverGameObject())
+        {
+            return;
+        }
+
+        if (pigeonData.stage == LifeStage.Egg)
+        {
+            return;
+        }
+
+        pigeonData.Feed();
+        Debug.Log($"Fed {pigeonData.pigeonName}. Hunger is now {pigeonData.GetCurrentHunger()}");
+    }
+
     void Update()
     {
         if (pigeonData.stage == LifeStage.Egg)
@@ -88,7 +110,18 @@ public class PigeonController : MonoBehaviour
         }
         else
         {
-            debugHunger = pigeonData.GetCurrentHunger();
+            float currentHunger = pigeonData.GetCurrentHunger();
+            debugHunger = currentHunger;
+            hungerBar.value = currentHunger;
+
+            if (pigeonData.IsHungry())
+            {
+                spriteRenderer.color = hungryColor;
+            }
+            else
+            {
+                spriteRenderer.color = Color.white;
+            }
         }
     }
 }

@@ -1347,6 +1347,7 @@ GameObject:
   - component: {fileID: 1818862635}
   - component: {fileID: 1818862634}
   - component: {fileID: 1818862633}
+  - component: {fileID: 1818862636}
   m_Layer: 0
   m_Name: Pigeon-test
   m_TagString: Untagged
@@ -1371,6 +1372,7 @@ MonoBehaviour:
   chickSprite: {fileID: 1942165019, guid: 2280e9b646625d7418a5288c3bad869c, type: 3}
   youngSprite: {fileID: -16805063, guid: 2280e9b646625d7418a5288c3bad869c, type: 3}
   adultSprite: {fileID: 128829842, guid: 2280e9b646625d7418a5288c3bad869c, type: 3}
+  debugHunger: 0
   namePopup: {fileID: 1822266363}
   nameInput: {fileID: 1249823665}
   confirmButton: {fileID: 1255747447}
@@ -1415,7 +1417,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
+  m_Sprite: {fileID: 1831693757, guid: 2280e9b646625d7418a5288c3bad869c, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -1441,6 +1443,41 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!58 &1818862636
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1818862632}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: -0.09, y: 0.06}
+  serializedVersion: 2
+  m_Radius: 1.36
 --- !u!1 &1822266363
 GameObject:
   m_ObjectHideFlags: 0
@@ -1458,7 +1495,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1822266364
 RectTransform:
   m_ObjectHideFlags: 0
