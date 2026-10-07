@@ -31,6 +31,7 @@ public class PigeonController : MonoBehaviour
     [SerializeField] private TMP_InputField nameInput;
     [SerializeField] private Button confirmButton;
     [SerializeField] private Button freeFlyButton;
+    [SerializeField] private Button breedButton;
 
     [Header("Petting")]
     [SerializeField] private float bondPerPixel = 0.02f;
@@ -51,6 +52,8 @@ public class PigeonController : MonoBehaviour
         {
             confirmButton.onClick.AddListener(OnConfirmClicked);
             freeFlyButton.onClick.AddListener(OnFreeFlyClicked);
+            breedButton.onClick.AddListener(OnBreedClicked);
+            breedButton.gameObject.SetActive(false);
             namePopup.SetActive(false);
             freeFlyButton.gameObject.SetActive(false);
         }
@@ -299,8 +302,11 @@ public class PigeonController : MonoBehaviour
             // ONLY THE STARTER CONTROLS THE SHARED FREE FLY BUTTON.
             if (isStarter)
             {
+                Pigeon mate = pigeonCollection.FindByID(pigeonData.mateID);
+                breedButton.gameObject.SetActive(pigeonData.CanBreedWith(mate));
                 freeFlyButton.gameObject.SetActive(
                     pigeonData.CanFreeFly()
+
                 );
             }
         }
@@ -399,5 +405,17 @@ public class PigeonController : MonoBehaviour
         Debug.Log(
             $"A {mate.gender} mate arrived for {pigeonData.pigeonName}!"
         );
+    }
+
+    private void OnBreedClicked()
+    {
+        Pigeon mate = pigeonCollection.FindByID(pigeonData.mateID);
+
+        if (pigeonData.CanBreedWith(mate))
+        {
+            pigeonCollection.Breed(pigeonData, mate);
+            breedButton.gameObject.SetActive(false);
+            Debug.Log("Breeding complete: 2 eggs added.");
+        }
     }
 }

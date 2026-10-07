@@ -37,6 +37,9 @@ public class Pigeon
     public bool isAway;
     public bool hasFreeFlown;
     public string mateID = "";
+    public string parentAID = "";
+    public string parentBID = "";
+    public bool hasBred;
     [System.NonSerialized] public System.DateTime lastFedTime;
     [System.NonSerialized] public System.DateTime creationTime;
     [System.NonSerialized]public System.DateTime returnTime;
@@ -187,5 +190,15 @@ public class Pigeon
         returnTime = System.DateTime.Parse(returnTimeText, null, System.Globalization.DateTimeStyles.RoundtripKind);
     }
 
+    public bool CanBreedWith(Pigeon other)
+    {
+        if (other == null) return false;
 
+        return stage == LifeStage.Adult && other.stage == LifeStage.Adult
+            && bond >= MaxBond && other.bond >= MaxBond
+            && !isAway && !other.isAway
+            && gender != other.gender
+            && mateID == other.pigeonID
+            && !hasBred && !other.hasBred;
+    }
 }

@@ -13,8 +13,34 @@ public class PigeonCollection : MonoBehaviour
         Debug.Log($"Added pigeon to collection. Total owned: {ownedPigeons.Count}");
     }
 
+    public Pigeon FindByID(string id)
+    {
+        foreach (Pigeon p in ownedPigeons)
+        {
+            if (p.pigeonID == id) return p;
+        }
+        return null;
+    }
+
+    public void Breed(Pigeon a, Pigeon b)
+    {
+        for (int i = 0; i < 2; i++)
+        {
+            string color = (Random.value < 0.5f) ? a.pigeonColor : b.pigeonColor;
+            Pigeon egg = new Pigeon("", color, a.breedType, LifeStage.Egg, BreedRarity.Common);
+            egg.parentAID = a.pigeonID;
+            egg.parentBID = b.pigeonID;
+            AddPigeon(egg);
+        }
+
+        a.hasBred = true;
+        b.hasBred = true;
+        SaveGame();
+    }
     public void SaveGame()
     {
         saveManager.Save(ownedPigeons);
     }
+
+
 }
