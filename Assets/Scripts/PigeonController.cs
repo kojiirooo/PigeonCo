@@ -33,6 +33,9 @@ public class PigeonController : MonoBehaviour
     [SerializeField] private Button freeFlyButton;
     [SerializeField] private Button breedButton;
 
+    [Header("Info Panel")]
+    [SerializeField] private PigeonInfoPanel infoPanel;
+
     [Header("Petting")]
     [SerializeField] private float bondPerPixel = 0.02f;
     [SerializeField] private float tapMoveLimit = 10f;
@@ -161,6 +164,34 @@ public class PigeonController : MonoBehaviour
         pigeonCollection.SaveGame();
 
         Debug.Log($"Pigeon named: {pigeonData.pigeonName}");
+    }
+
+    private void OnMouseOver()
+    {
+        // Right-click opens the info panel.
+        if (!Input.GetMouseButtonDown(1))
+        {
+            return;
+        }
+
+        if (pigeonData == null || infoPanel == null)
+        {
+            return;
+        }
+
+        // Don't open when clicking through UI.
+        if (EventSystem.current.IsPointerOverGameObject())
+        {
+            return;
+        }
+
+        // Away pigeons are not visible, so no info.
+        if (pigeonData.isAway)
+        {
+            return;
+        }
+
+        infoPanel.Show(pigeonData);
     }
 
     private void OnMouseDown()
@@ -428,7 +459,7 @@ public class PigeonController : MonoBehaviour
             int count = pigeonCollection.ownedPigeons.Count;
             nursery1.SetupPigeon(pigeonCollection.ownedPigeons[count - 2]);
             nursery2.SetupPigeon(pigeonCollection.ownedPigeons[count - 1]);
-            
+
             breedButton.gameObject.SetActive(false);
             Debug.Log("Breeding complete: 2 eggs added.");
         }
