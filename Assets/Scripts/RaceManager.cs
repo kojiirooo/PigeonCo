@@ -7,6 +7,7 @@ public static class RaceManager
     // Returns the place the player finished in (1 = first).
     public static int RunRace(Pigeon player)
     {
+        float wingbandBonus = player.hasWingband ? Pigeon.WingbandRaceBonus : 0f;
         float playerScore = player.GetRating() + Random.Range(0f, 20f);
         int place = 1;
 
@@ -14,7 +15,7 @@ public static class RaceManager
 
         for (int i = 0; i < OpponentCount; i++)
         {
-            float opponentRating = player.GetRating() + Random.Range(-15f, 15f);
+            float opponentRating = player.GetBaseRating() + Random.Range(-15f, 15f);
             float opponentScore = opponentRating + Random.Range(0f, 20f);
 
             Debug.Log($"Opponent {i + 1} race score: {opponentScore}");

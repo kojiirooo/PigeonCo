@@ -40,6 +40,8 @@ public class Pigeon
     public string parentAID = "";
     public string parentBID = "";
     public bool hasBred;
+    public bool hasRing;
+    public bool hasWingband;
     [System.NonSerialized] public System.DateTime lastFedTime;
     [System.NonSerialized] public System.DateTime creationTime;
     [System.NonSerialized]public System.DateTime returnTime;
@@ -61,6 +63,8 @@ public class Pigeon
     public const float BondToBeAdult = 100f;
     public const float FreeFlyMinutes = 0.1f;
     public const float PremiumBondBonus = 10f;
+    public const float RingRatingBonus = 10f;
+    public const float WingbandRaceBonus = 10f;
 
 
 
@@ -154,6 +158,18 @@ public class Pigeon
     }
 
     public float GetRating()
+    {
+        float rating = GetBaseRating();
+
+        if (hasRing)
+        {
+            rating += RingRatingBonus;
+        }
+
+        return rating;
+    }
+
+    public float GetBaseRating()
     {
         float rarityPoints = 10f;
 

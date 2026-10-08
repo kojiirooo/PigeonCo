@@ -270,19 +270,17 @@ public class PigeonController : MonoBehaviour
         // Small click = feed
         if (dragDistance <= tapMoveLimit)
         {
-            if (pigeonCollection.premiumFeedArmed && pigeonCollection.UsePremiumFeed(pigeonData))
+            if (pigeonCollection.ringArmed && pigeonCollection.UseRing(pigeonData))
             {
-                if (pigeonData.TryGrow())
-                {
-                    UpdateSprite();
-                }
+                Debug.Log(pigeonData.pigeonName + " got a ring!");
             }
-            else
+            else if (pigeonCollection.wingbandArmed && pigeonCollection.UseWingband(pigeonData))
             {
-                pigeonData.Feed();
+                Debug.Log(pigeonData.pigeonName + " got a wingband!");
             }
+            else if (pigeonCollection.premiumFeedArmed && pigeonCollection.UsePremiumFeed(pigeonData))
 
-            Debug.Log(
+                Debug.Log(
                 $"Fed {pigeonData.pigeonName}. " +
                 $"Hunger is now {pigeonData.GetCurrentHunger()}"
             );

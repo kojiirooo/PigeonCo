@@ -9,6 +9,8 @@ public class SaveData
     public List<Pigeon> pigeons = new List<Pigeon>();
     public int coins;
     public int premiumFeed;
+    public int rings;
+    public int wingbands;
 }
 
 public class SaveManager : MonoBehaviour
@@ -20,13 +22,17 @@ public class SaveManager : MonoBehaviour
 
     public int loadedCoins;
     public int loadedPremiumFeed;
+    public int loadedRings;
+    public int loadedWingbands;
 
-    public void Save(List<Pigeon> pigeons, int coins, int premiumFeed)
+    public void Save(List<Pigeon> pigeons, int coins, int premiumFeed, int rings, int wingbands)
     {
         SaveData data = new SaveData();
         data.pigeons = pigeons;
         data.coins = coins;
         data.premiumFeed = premiumFeed;
+        data.rings = rings;
+        data.wingbands = wingbands;
 
         foreach (Pigeon p in data.pigeons)
         {
@@ -58,6 +64,8 @@ public class SaveManager : MonoBehaviour
 
         loadedCoins = data.coins;
         loadedPremiumFeed = data.premiumFeed;
+        loadedRings = data.rings;
+        loadedWingbands = data.wingbands;
         Debug.Log("Loaded " + data.pigeons.Count + " pigeon(s).");
         return data.pigeons;
     }

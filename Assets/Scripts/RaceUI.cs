@@ -23,14 +23,20 @@ public class RaceUI : MonoBehaviour
 
     private Pigeon FindRacer()
     {
+        Pigeon best = null;
+
         foreach (Pigeon p in pigeonCollection.ownedPigeons)
         {
             if (pigeonCollection.CanRace(p))
             {
-                return p;
+                if (best == null || p.GetRating() > best.GetRating())
+                {
+                    best = p;
+                }
             }
         }
-        return null;
+
+        return best;
     }
 
     private void OnRaceClicked()

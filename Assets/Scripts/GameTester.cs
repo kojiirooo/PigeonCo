@@ -23,6 +23,8 @@ public class GameTester : MonoBehaviour
             }
             pigeonCollection.coins = saveManager.loadedCoins;
             pigeonCollection.premiumFeed = saveManager.loadedPremiumFeed;
+            pigeonCollection.rings = saveManager.loadedRings;
+            pigeonCollection.wingbands = saveManager.loadedWingbands;
             pigeonController.SetupPigeon(loaded[0]);
             if (loaded.Count > 1)
             {

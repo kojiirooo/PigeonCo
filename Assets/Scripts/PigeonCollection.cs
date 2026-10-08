@@ -11,6 +11,12 @@ public class PigeonCollection : MonoBehaviour
     public int premiumFeed;
     public bool premiumFeedArmed;
     public const int PremiumFeedCost = 30;
+    public int rings;
+    public int wingbands;
+    public bool ringArmed;
+    public bool wingbandArmed;
+    public const int RingCost = 50;
+    public const int WingbandCost = 80;
 
     public void AddPigeon(Pigeon newPigeon)
     {
@@ -74,6 +80,58 @@ public class PigeonCollection : MonoBehaviour
         SaveGame();
     }
 
+    public bool TryBuyRing()
+    {
+        if (coins < RingCost)
+        {
+            return false;
+        }
+
+        coins -= RingCost;
+        rings++;
+        SaveGame();
+        return true;
+    }
+
+    public bool TryBuyWingband()
+    {
+        if (coins < WingbandCost)
+        {
+            return false;
+        }
+
+        coins -= WingbandCost;
+        wingbands++;
+        SaveGame();
+        return true;
+    }
+
+    public bool UseRing(Pigeon p)
+    {
+        if (rings <= 0 || p.hasRing || p.stage == LifeStage.Egg || p.isAway)
+        {
+            return false;
+        }
+
+        rings--;
+        p.hasRing = true;
+        ringArmed = false;
+        return true;
+    }
+
+    public bool UseWingband(Pigeon p)
+    {
+        if (wingbands <= 0 || p.hasWingband || p.stage == LifeStage.Egg || p.isAway)
+        {
+            return false;
+        }
+
+        wingbands--;
+        p.hasWingband = true;
+        wingbandArmed = false;
+        return true;
+    }
+
     public bool TryBuyPremiumFeed()
     {
         if (coins < PremiumFeedCost)
@@ -102,7 +160,7 @@ public class PigeonCollection : MonoBehaviour
 
     public void SaveGame()
     {
-        saveManager.Save(ownedPigeons, coins, premiumFeed);
+        saveManager.Save(ownedPigeons, coins, premiumFeed, rings, wingbands);
     }
 
 
