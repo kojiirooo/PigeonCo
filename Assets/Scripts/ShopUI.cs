@@ -7,6 +7,11 @@ public class ShopUI : MonoBehaviour
     [SerializeField] private PigeonCollection pigeonCollection;
     [SerializeField] private TMP_Text messageText;
 
+    [Header("Shop Panel")]
+    [SerializeField] private GameObject shopPanel;
+    [SerializeField] private Button shopButton;
+    [SerializeField] private Button closeShopButton;
+
     [Header("Premium Feed")]
     [SerializeField] private Button buyButton;
     [SerializeField] private Button useButton;
@@ -31,6 +36,9 @@ public class ShopUI : MonoBehaviour
         buyWingbandButton.onClick.AddListener(OnBuyWingbandClicked);
         useWingbandButton.onClick.AddListener(OnUseWingbandClicked);
         messageText.text = "";
+        shopButton.onClick.AddListener(OpenShop);
+        closeShopButton.onClick.AddListener(CloseShop);
+        shopPanel.SetActive(false);
     }
 
     void Update()
@@ -52,6 +60,15 @@ public class ShopUI : MonoBehaviour
         useWingbandButton.interactable = pigeonCollection.wingbands > 0;
     }
 
+    private void OpenShop()
+    {
+        shopPanel.SetActive(true);
+    }
+
+    private void CloseShop()
+    {
+        shopPanel.SetActive(false);
+    }
     private void DisarmAll()
     {
         pigeonCollection.premiumFeedArmed = false;

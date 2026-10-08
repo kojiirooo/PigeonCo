@@ -52,8 +52,24 @@ public class PigeonController : MonoBehaviour
     private float dragDistance;
     private Vector3 lastMousePosition;
 
+    [Header("Wandering")]
+    [SerializeField] private bool canWander = false;
+    [SerializeField] private float wanderRadius = 2f;
+    [SerializeField] private float wanderSpeed = 0.5f;
+    [SerializeField] private float minPause = 1f;
+    [SerializeField] private float maxPause = 3f;
+
+    private Vector3 homePosition;
+    private Vector3 wanderTarget;
+    private float pauseTimer;
+
+    [Header("Hunger Bar Follow")]
+    [SerializeField] private Vector3 hungerBarOffset = new Vector3(0f, 0.8f, 0f);
+
     void Start()
     {
+        homePosition = transform.position;
+        wanderTarget = homePosition;
         if (isStarter)
         {
             confirmButton.onClick.AddListener(OnConfirmClicked);
@@ -225,6 +241,7 @@ public class PigeonController : MonoBehaviour
         }
 
         isPressing = true;
+        PigeonSelection.Instance.Select(this);
         dragDistance = 0f;
         lastMousePosition = Input.mousePosition;
     }
@@ -279,11 +296,16 @@ public class PigeonController : MonoBehaviour
                 Debug.Log(pigeonData.pigeonName + " got a wingband!");
             }
             else if (pigeonCollection.premiumFeedArmed && pigeonCollection.UsePremiumFeed(pigeonData))
-
-                Debug.Log(
-                $"Fed {pigeonData.pigeonName}. " +
-                $"Hunger is now {pigeonData.GetCurrentHunger()}"
-            );
+            {
+                Debug.Log($"Premium fed {pigeonData.pigeonName}.");
+            }
+            else
+            {
+                // Normal feed
+                pigeonData.Feed();
+                SoundManager.Instance?.PlayFeed();
+                Debug.Log($"Fed {pigeonData.pigeonName}. Hunger is now {pigeonData.GetCurrentHunger()}");
+            }
 
             pigeonCollection.SaveGame();
         }
@@ -302,9 +324,8 @@ public class PigeonController : MonoBehaviour
             return;
         }
 
-        // =========================
-        // EGG
-        // =========================
+      
+        // EGG  
         if (pigeonData.stage == LifeStage.Egg)
         {
             if (pigeonData.IsReadyToHatch())
@@ -313,9 +334,8 @@ public class PigeonController : MonoBehaviour
             }
         }
 
-        // =========================
+       
         // AWAY / FREE FLYING
-        // =========================
         else if (pigeonData.isAway)
         {
             if (pigeonData.IsBackFromFreeFly())
@@ -324,9 +344,8 @@ public class PigeonController : MonoBehaviour
             }
         }
 
-        // =========================
+        
         // ACTIVE PIGEON
-        // =========================
         else
         {
             float currentHunger = pigeonData.GetCurrentHunger();
@@ -357,8 +376,65 @@ public class PigeonController : MonoBehaviour
 
                 );
             }
+
+            // Only chicks and up wander, and only when not being pressed
+            if (canWander && !isPressing)
+            {
+                Wander();
+            }
         }
     }
+
+    private void Wander()
+    {
+        // Pause at a spot before walking again
+        if (pauseTimer > 0f)
+        {
+            pauseTimer -= Time.deltaTime;
+            return;
+        }
+
+        transform.position = Vector3.MoveTowards(
+            transform.position,
+            wanderTarget,
+            wanderSpeed * Time.deltaTime
+        );
+
+        // Reached the spot: pick a new one near home
+        if (Vector3.Distance(transform.position, wanderTarget) < 0.01f)
+        {
+            wanderTarget = homePosition + (Vector3)(Random.insideUnitCircle * wanderRadius);
+            pauseTimer = Random.Range(minPause, maxPause);
+        }
+    }
+
+
+    private void FollowHungerBar()
+    {
+        // Only move the bar when it's visible
+        if (hungerBar == null || !hungerBar.gameObject.activeSelf)
+        {
+            return;
+        }
+
+        // Turn the pigeon's world position into a screen position
+        Vector3 screenPos = Camera.main.WorldToScreenPoint(transform.position + hungerBarOffset);
+
+        RectTransform barRect = hungerBar.transform as RectTransform;
+        barRect.position = screenPos;
+    }
+
+    void LateUpdate()
+    {
+        // LateUpdate runs after the wandering moves, so the bar doesn't lag behind
+        if (pigeonData == null)
+        {
+            return;
+        }
+
+        FollowHungerBar();
+    }
+
 
     private void OnFreeFlyClicked()
     {
