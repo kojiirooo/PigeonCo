@@ -60,6 +60,7 @@ public class Pigeon
     public const float BondToBeYoung = 40f;
     public const float BondToBeAdult = 100f;
     public const float FreeFlyMinutes = 0.1f;
+    public const float PremiumBondBonus = 10f;
 
 
 
@@ -218,5 +219,12 @@ public class Pigeon
             && gender != other.gender
             && mateID == other.pigeonID
             && !hasBred && !other.hasBred;
+    }
+
+    public void PremiumFeed()
+    {
+        hunger = 100f;
+        lastFedTime = System.DateTime.Now;
+        bond = Mathf.Min(MaxBond, bond + PremiumBondBonus);
     }
 }

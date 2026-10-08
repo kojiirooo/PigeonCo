@@ -270,7 +270,17 @@ public class PigeonController : MonoBehaviour
         // Small click = feed
         if (dragDistance <= tapMoveLimit)
         {
-            pigeonData.Feed();
+            if (pigeonCollection.premiumFeedArmed && pigeonCollection.UsePremiumFeed(pigeonData))
+            {
+                if (pigeonData.TryGrow())
+                {
+                    UpdateSprite();
+                }
+            }
+            else
+            {
+                pigeonData.Feed();
+            }
 
             Debug.Log(
                 $"Fed {pigeonData.pigeonName}. " +

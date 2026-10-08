@@ -22,6 +22,7 @@ public class GameTester : MonoBehaviour
                 pigeonCollection.AddPigeon(p);
             }
             pigeonCollection.coins = saveManager.loadedCoins;
+            pigeonCollection.premiumFeed = saveManager.loadedPremiumFeed;
             pigeonController.SetupPigeon(loaded[0]);
             if (loaded.Count > 1)
             {

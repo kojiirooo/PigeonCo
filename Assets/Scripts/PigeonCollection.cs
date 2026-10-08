@@ -6,7 +6,11 @@ public class PigeonCollection : MonoBehaviour
 {
     public List<Pigeon> ownedPigeons = new List<Pigeon>();
     [SerializeField] private SaveManager saveManager;
+  
     public int coins;
+    public int premiumFeed;
+    public bool premiumFeedArmed;
+    public const int PremiumFeedCost = 30;
 
     public void AddPigeon(Pigeon newPigeon)
     {
@@ -70,9 +74,35 @@ public class PigeonCollection : MonoBehaviour
         SaveGame();
     }
 
+    public bool TryBuyPremiumFeed()
+    {
+        if (coins < PremiumFeedCost)
+        {
+            return false;
+        }
+
+        coins -= PremiumFeedCost;
+        premiumFeed++;
+        SaveGame();
+        return true;
+    }
+
+    public bool UsePremiumFeed(Pigeon p)
+    {
+        if (premiumFeed <= 0 || p.stage == LifeStage.Egg || p.isAway)
+        {
+            return false;
+        }
+
+        premiumFeed--;
+        p.PremiumFeed();
+        premiumFeedArmed = false;
+        return true;
+    }
+
     public void SaveGame()
     {
-        saveManager.Save(ownedPigeons);
+        saveManager.Save(ownedPigeons, coins, premiumFeed);
     }
 
 
