@@ -18,7 +18,7 @@ public class RaceUI : MonoBehaviour
     void Update()
     {
         coinsText.text = "Coins: " + pigeonCollection.coins;
-        raceButton.gameObject.SetActive(FindRacer() != null);
+        
     }
 
     private Pigeon FindRacer()
@@ -41,9 +41,9 @@ public class RaceUI : MonoBehaviour
 
     private void OnRaceClicked()
     {
-        Pigeon racer = FindRacer();
+        Pigeon racer = PigeonSelection.Instance.Selected?.pigeonData;
 
-        if (racer == null)
+        if (racer == null || !pigeonCollection.CanRace(racer))
         {
             return;
         }

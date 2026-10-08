@@ -73,11 +73,9 @@ public class PigeonController : MonoBehaviour
         if (isStarter)
         {
             confirmButton.onClick.AddListener(OnConfirmClicked);
-            freeFlyButton.onClick.AddListener(OnFreeFlyClicked);
-            breedButton.onClick.AddListener(OnBreedClicked);
             breedButton.gameObject.SetActive(false);
             namePopup.SetActive(false);
-            freeFlyButton.gameObject.SetActive(false);
+            
         }
     }
 
@@ -91,7 +89,7 @@ public class PigeonController : MonoBehaviour
             spriteRenderer.enabled = false;
         }
     }
-
+    public bool IsStarter => isStarter;
     public void SetupPigeon(Pigeon data)
     {
         // IMPORTANT:
@@ -366,17 +364,6 @@ public class PigeonController : MonoBehaviour
                 spriteRenderer.color = Color.white;
             }
 
-            // ONLY THE STARTER CONTROLS THE SHARED FREE FLY BUTTON.
-            if (isStarter)
-            {
-                Pigeon mate = pigeonCollection.FindByID(pigeonData.mateID);
-                breedButton.gameObject.SetActive(pigeonData.CanBreedWith(mate));
-                freeFlyButton.gameObject.SetActive(
-                    pigeonData.CanFreeFly()
-
-                );
-            }
-
             // Only chicks and up wander, and only when not being pressed
             if (canWander && !isPressing)
             {
@@ -436,7 +423,7 @@ public class PigeonController : MonoBehaviour
     }
 
 
-    private void OnFreeFlyClicked()
+        public void OnFreeFlyClicked()
     {
         // Safety check.
         if (pigeonData == null)
@@ -446,9 +433,16 @@ public class PigeonController : MonoBehaviour
 
         pigeonData.StartFreeFly();
 
-        freeFlyButton.gameObject.SetActive(false);
-        hungerBar.gameObject.SetActive(false);
-        spriteRenderer.enabled = false;
+        // Only some controllers have these assigned, so check first.
+        if (hungerBar != null)
+        {
+            hungerBar.gameObject.SetActive(false);
+        }
+
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.enabled = false;
+        }
 
         Debug.Log($"{pigeonData.pigeonName} flew away!");
 
@@ -468,7 +462,10 @@ public class PigeonController : MonoBehaviour
 
         // When the starter pigeon comes back,
         // bring its mate with it.
-        BringMate();
+        if (isStarter)
+        {
+            BringMate();
+        }
 
         pigeonCollection.SaveGame();
     }
@@ -501,11 +498,11 @@ public class PigeonController : MonoBehaviour
             mate.gender = Gender.Male;
         }
 
-        // Give the mate max bond.
-        mate.bond = Pigeon.MaxBond;
+        // The mate starts with no bond. Pet it to build bond.
+        mate.bond = 0f;
 
         // Mark the mate as having free-flown before.
-        mate.hasFreeFlown = true;
+        mate.hasFreeFlown = false;
 
         // Connect the two pigeons.
         mate.mateID = pigeonData.pigeonID;
@@ -531,21 +528,35 @@ public class PigeonController : MonoBehaviour
         );
     }
 
-    private void OnBreedClicked()
+    public void OnBreedClicked()
     {
         Pigeon mate = pigeonCollection.FindByID(pigeonData.mateID);
 
-        if (pigeonData.CanBreedWith(mate))
+        if (!pigeonData.CanBreedWith(mate))
         {
-            pigeonCollection.Breed(pigeonData, mate);
-
-            // The 2 new eggs are the last 2 in the collection.
-            int count = pigeonCollection.ownedPigeons.Count;
-            nursery1.SetupPigeon(pigeonCollection.ownedPigeons[count - 2]);
-            nursery2.SetupPigeon(pigeonCollection.ownedPigeons[count - 1]);
-
-            breedButton.gameObject.SetActive(false);
-            Debug.Log("Breeding complete: 2 eggs added.");
+            return;
         }
+
+        pigeonCollection.Breed(pigeonData, mate);
+
+        // The 2 new eggs are the last 2 in the collection.
+        int count = pigeonCollection.ownedPigeons.Count;
+
+        if (nursery1 != null)
+        {
+            nursery1.SetupPigeon(pigeonCollection.ownedPigeons[count - 2]);
+        }
+
+        if (nursery2 != null)
+        {
+            nursery2.SetupPigeon(pigeonCollection.ownedPigeons[count - 1]);
+        }
+
+        if (breedButton != null)
+        {
+            breedButton.gameObject.SetActive(false);
+        }
+
+        Debug.Log("Breeding complete: 2 eggs added.");
     }
 }

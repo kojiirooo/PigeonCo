@@ -42,6 +42,7 @@ public class Pigeon
     public bool hasBred;
     public bool hasRing;
     public bool hasWingband;
+    public int loftID = 1;
     [System.NonSerialized] public System.DateTime lastFedTime;
     [System.NonSerialized] public System.DateTime creationTime;
     [System.NonSerialized]public System.DateTime returnTime;
@@ -188,7 +189,7 @@ public class Pigeon
 
     public bool CanFreeFly()
     {
-        return stage == LifeStage.Adult && !hasFreeFlown && !isAway;
+        return stage == LifeStage.Adult && bond >= MaxBond && !hasFreeFlown && !isAway;
     }
 
     public void StartFreeFly()
@@ -220,6 +221,8 @@ public class Pigeon
 
     public void RestoreAfterLoad()
     {
+        // Saves made before lofts existed have no loft, so they go to Loft 1
+        if (loftID == 0) loftID = 1;
         creationTime = System.DateTime.Parse(creationTimeText, null, System.Globalization.DateTimeStyles.RoundtripKind);
         lastFedTime = System.DateTime.Parse(lastFedTimeText, null, System.Globalization.DateTimeStyles.RoundtripKind);
         returnTime = System.DateTime.Parse(returnTimeText, null, System.Globalization.DateTimeStyles.RoundtripKind);

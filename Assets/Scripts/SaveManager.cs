@@ -44,6 +44,31 @@ public class SaveManager : MonoBehaviour
         Debug.Log("Saved to: " + SavePath);
     }
 
+
+    public void SaveLoft(List<Pigeon> loftPigeons, int loftNumber, int coins, int premiumFeed, int rings, int wingbands)
+    {
+        List<Pigeon> combined = new List<Pigeon>();
+
+        // Keep the pigeons from other lofts exactly as they are
+        if (File.Exists(SavePath))
+        {
+            SaveData existing = JsonUtility.FromJson<SaveData>(File.ReadAllText(SavePath));
+            foreach (Pigeon p in existing.pigeons)
+            {
+                if (p.loftID != loftNumber)
+                {
+                    p.RestoreAfterLoad();
+                    combined.Add(p);
+                }
+            }
+        }
+
+        // Then add this loft's current pigeons
+        combined.AddRange(loftPigeons);
+
+        Save(combined, coins, premiumFeed, rings, wingbands);
+    }
+
     public List<Pigeon> Load()
     {
         if (!File.Exists(SavePath))

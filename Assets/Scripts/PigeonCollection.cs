@@ -5,6 +5,7 @@ using UnityEngine;
 public class PigeonCollection : MonoBehaviour
 {
     public List<Pigeon> ownedPigeons = new List<Pigeon>();
+    public int loftNumber = 1;
     [SerializeField] private SaveManager saveManager;
   
     public int coins;
@@ -20,6 +21,7 @@ public class PigeonCollection : MonoBehaviour
 
     public void AddPigeon(Pigeon newPigeon)
     {
+        newPigeon.loftID = loftNumber;
         ownedPigeons.Add(newPigeon);
         Debug.Log($"Added pigeon to collection. Total owned: {ownedPigeons.Count}");
     }
@@ -51,8 +53,7 @@ public class PigeonCollection : MonoBehaviour
 
     public bool CanRace(Pigeon p)
     {
-        // Only adults that are home can race.
-        if (p.stage != LifeStage.Adult || p.isAway)
+        if (p.stage != LifeStage.Adult || p.isAway || p.bond < Pigeon.MaxBond)
         {
             return false;
         }
@@ -160,7 +161,7 @@ public class PigeonCollection : MonoBehaviour
 
     public void SaveGame()
     {
-        saveManager.Save(ownedPigeons, coins, premiumFeed, rings, wingbands);
+        saveManager.SaveLoft(ownedPigeons, loftNumber, coins, premiumFeed, rings, wingbands);
     }
 
 
