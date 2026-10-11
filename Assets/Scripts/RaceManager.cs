@@ -4,11 +4,12 @@ public static class RaceManager
 {
     public const int OpponentCount = 3;
 
+
     // Returns the place the player finished in (1 = first).
     public static int RunRace(Pigeon player)
     {
         float wingbandBonus = player.hasWingband ? Pigeon.WingbandRaceBonus : 0f;
-        float playerScore = player.GetRating() + Random.Range(0f, 20f);
+        float playerScore = player.GetRating() + wingbandBonus + Random.Range(0f, 20f);
         int place = 1;
 
         Debug.Log($"{player.pigeonName} race score: {playerScore}");

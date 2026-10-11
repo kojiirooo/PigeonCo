@@ -6,6 +6,7 @@ public class PigeonCollection : MonoBehaviour
 {
     public List<Pigeon> ownedPigeons = new List<Pigeon>();
     public int loftNumber = 1;
+    public BreedRarity loftRarity = BreedRarity.Common;
     [SerializeField] private SaveManager saveManager;
   
     public int coins;

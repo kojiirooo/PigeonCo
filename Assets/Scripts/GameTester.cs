@@ -16,7 +16,7 @@ public class GameTester : MonoBehaviour
 
     void Start()
     {
-        pigeonCollection.loftNumber = loftNumber;
+        pigeonCollection.loftNumber = loftNumber;   
         List<Pigeon> all = saveManager.Load();
 
         // Shared resources load for every loft
@@ -61,10 +61,10 @@ public class GameTester : MonoBehaviour
                 nursery2.SetupPigeon(loaded[3]);
             }
         }
-        else if (loftNumber == 1)
+        else 
         {
             // Only Loft 1 starts with the starter egg
-            Pigeon starterEgg = new Pigeon("", "Grey", "Common Pigeon", LifeStage.Egg, BreedRarity.Common);
+            Pigeon starterEgg = new Pigeon("", "Grey", "Common Pigeon", LifeStage.Egg, pigeonCollection.loftRarity);
             starterEgg.loftID = loftNumber;
             pigeonCollection.AddPigeon(starterEgg);
             pigeonController.SetupPigeon(starterEgg);

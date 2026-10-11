@@ -34,7 +34,7 @@ public class PigeonController : MonoBehaviour
     [SerializeField] private Button breedButton;
 
     [Header("Info Panel")]
-    [SerializeField] private PigeonInfoPanel infoPanel;
+    [SerializeField] private PigeonInfoPanel infoPanel; 
 
     [Header("Petting")]
     [SerializeField] private float bondPerPixel = 0.02f;
@@ -205,7 +205,7 @@ public class PigeonController : MonoBehaviour
             return;
         }
 
-        infoPanel.Show(pigeonData);
+        infoPanel.Show(this);
     }
 
     private void OnMouseDown()
@@ -300,8 +300,7 @@ public class PigeonController : MonoBehaviour
             else
             {
                 // Normal feed
-                pigeonData.Feed();
-                SoundManager.Instance?.PlayFeed();
+                FeedPigeon();
                 Debug.Log($"Fed {pigeonData.pigeonName}. Hunger is now {pigeonData.GetCurrentHunger()}");
             }
 
@@ -314,6 +313,35 @@ public class PigeonController : MonoBehaviour
         }
     }
 
+
+    public void FeedPigeon()
+    {
+        if (pigeonData == null || pigeonData.stage == LifeStage.Egg || pigeonData.isAway)
+        {
+            return;
+        }
+
+        pigeonData.Feed();
+        SoundManager.Instance?.PlayFeed();
+        pigeonCollection.SaveGame();
+    }
+
+    public void PetPigeon()
+    {
+        if (pigeonData == null || pigeonData.stage == LifeStage.Egg || pigeonData.isAway)
+        {
+            return;
+        }
+
+        pigeonData.AddBond(5f);
+
+        if (pigeonData.TryGrow())
+        {
+            UpdateSprite();
+        }
+
+        pigeonCollection.SaveGame();
+    }
     void Update()
     {
         // Mate-test starts with no data.

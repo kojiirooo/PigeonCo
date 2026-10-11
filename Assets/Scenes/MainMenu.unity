@@ -916,7 +916,7 @@ MonoBehaviour:
   continueButton: {fileID: 249627182}
   newGameButton: {fileID: 1182598690}
   quitButton: {fileID: 1814121657}
-  gameSceneName: Loft
+  gameSceneName: Loft1
   confirmPanel: {fileID: 1561218707}
   confirmYesButton: {fileID: 1934443757}
   confirmNoButton: {fileID: 1215880679}
