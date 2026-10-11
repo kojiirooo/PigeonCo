@@ -6,7 +6,41 @@ public class PigeonCollection : MonoBehaviour
 {
     public List<Pigeon> ownedPigeons = new List<Pigeon>();
     public int loftNumber = 1;
-    public BreedRarity loftRarity = BreedRarity.Common;
+    public bool loft2Unlocked = false;
+    public bool loft3Unlocked = false;
+
+    public bool IsLoftUnlocked(int loft)
+    {
+        if (loft == 1) return true;
+        if (loft == 2) return loft2Unlocked;
+        if (loft == 3) return loft3Unlocked;
+        return false;
+    }
+    public bool TryUnlockLoft(int loft)
+    {
+        if (IsLoftUnlocked(loft))
+        {
+            return false;
+        }
+
+        int cost = 0;
+        if (loft == 2) cost = Loft2Cost;
+        if (loft == 3) cost = Loft3Cost;
+
+        if (coins < cost)
+        {
+            return false;
+        }
+
+        coins -= cost;
+
+        if (loft == 2) loft2Unlocked = true;
+        if (loft == 3) loft3Unlocked = true;
+
+        SaveGame();
+        return true;
+    }
+
     [SerializeField] private SaveManager saveManager;
   
     public int coins;
@@ -19,6 +53,76 @@ public class PigeonCollection : MonoBehaviour
     public bool wingbandArmed;
     public const int RingCost = 50;
     public const int WingbandCost = 80;
+    public const int Loft2Cost = 500;
+    public const int Loft3Cost = 1000;
+
+    public int GetCapacity(int loft)
+    {
+        switch (loft)
+        {
+            case 1: return 4;
+            case 2: return 6;
+            case 3: return 8;
+            default: return 4;
+        }
+    }
+
+    public int CountPigeonsInLoft(int loft)
+    {
+        int count = 0;
+        foreach (Pigeon p in ownedPigeons)
+        {
+            if (p.loftID == loft)
+            {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public bool IsLoftFull(int loft)
+    {
+        return CountPigeonsInLoft(loft) >= GetCapacity(loft);
+    }
+
+    public bool TryMovePigeon(Pigeon p, int targetLoft)
+    {
+        if (p == null || p.loftID == targetLoft)
+        {
+            return false;
+        }
+
+        if (!IsLoftUnlocked(targetLoft) || IsLoftFull(targetLoft))
+        {
+            return false;
+        }
+
+        p.loftID = targetLoft;
+        SaveGame();
+        return true;
+    }
+
+    public void ReleasePigeon(Pigeon p)
+    {
+        if (p == null)
+        {
+            return;
+        }
+
+        // Clear the partner's link to this pigeon
+        foreach (Pigeon other in ownedPigeons)
+        {
+            if (other.mateID == p.pigeonID)
+            {
+                other.mateID = "";
+            }
+        }
+
+        ownedPigeons.Remove(p);
+        SaveGame();
+        Debug.Log("Released " + p.pigeonName + ".");
+    }
+
 
     public void AddPigeon(Pigeon newPigeon)
     {
@@ -36,8 +140,15 @@ public class PigeonCollection : MonoBehaviour
         return null;
     }
 
-    public void Breed(Pigeon a, Pigeon b)
+    public bool Breed(Pigeon a, Pigeon b)
     {
+        // Breeding makes 2 eggs, so the loft needs room for 2 more pigeons
+        if (CountPigeonsInLoft(loftNumber) + 2 > GetCapacity(loftNumber))
+        {
+            Debug.Log("Not enough room in this loft for 2 eggs.");
+            return false;
+        }
+
         for (int i = 0; i < 2; i++)
         {
             string color = (Random.value < 0.5f) ? a.pigeonColor : b.pigeonColor;
@@ -47,9 +158,12 @@ public class PigeonCollection : MonoBehaviour
             AddPigeon(egg);
         }
 
+        a.lastBredTime = System.DateTime.Now;
+        b.lastBredTime = System.DateTime.Now;
         a.hasBred = true;
         b.hasBred = true;
         SaveGame();
+        return true;
     }
 
     public bool CanRace(Pigeon p)
@@ -74,6 +188,21 @@ public class PigeonCollection : MonoBehaviour
         }
 
         return true;
+    }
+
+    public bool HasUnfinishedChildren(Pigeon p)
+    {
+        foreach (Pigeon other in ownedPigeons)
+        {
+            bool isChildOfP = other.parentAID == p.pigeonID || other.parentBID == p.pigeonID;
+
+            if (isChildOfP && other.stage != LifeStage.Young && other.stage != LifeStage.Adult)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public void AddCoins(int amount)
@@ -162,7 +291,7 @@ public class PigeonCollection : MonoBehaviour
 
     public void SaveGame()
     {
-        saveManager.SaveLoft(ownedPigeons, loftNumber, coins, premiumFeed, rings, wingbands);
+        saveManager.SaveLoft(ownedPigeons, loftNumber, coins, premiumFeed, rings, wingbands, loft2Unlocked, loft3Unlocked);
     }
 
 

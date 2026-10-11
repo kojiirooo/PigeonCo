@@ -460,6 +460,7 @@ public class PigeonController : MonoBehaviour
         }
 
         pigeonData.StartFreeFly();
+        pigeonData.lastFreeFlyTime = System.DateTime.Now;
 
         // Only some controllers have these assigned, so check first.
         if (hungerBar != null)
@@ -565,7 +566,11 @@ public class PigeonController : MonoBehaviour
             return;
         }
 
-        pigeonCollection.Breed(pigeonData, mate);
+        if (!pigeonCollection.Breed(pigeonData, mate))
+        {
+            Debug.Log("This loft is full. Move a pigeon out or unlock another loft first.");
+            return;
+        }
 
         // The 2 new eggs are the last 2 in the collection.
         int count = pigeonCollection.ownedPigeons.Count;

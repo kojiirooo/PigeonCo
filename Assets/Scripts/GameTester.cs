@@ -26,6 +26,8 @@ public class GameTester : MonoBehaviour
             pigeonCollection.premiumFeed = saveManager.loadedPremiumFeed;
             pigeonCollection.rings = saveManager.loadedRings;
             pigeonCollection.wingbands = saveManager.loadedWingbands;
+            pigeonCollection.loft2Unlocked = saveManager.loadedLoft2Unlocked;
+            pigeonCollection.loft3Unlocked = saveManager.loadedLoft3Unlocked;
         }
 
         // Only pigeons that belong to this loft
@@ -61,10 +63,10 @@ public class GameTester : MonoBehaviour
                 nursery2.SetupPigeon(loaded[3]);
             }
         }
-        else 
+        else if (loftNumber == 1)
         {
             // Only Loft 1 starts with the starter egg
-            Pigeon starterEgg = new Pigeon("", "Grey", "Common Pigeon", LifeStage.Egg, pigeonCollection.loftRarity);
+            Pigeon starterEgg = new Pigeon("", "Grey", "Common Pigeon", LifeStage.Egg, BreedRarity.Common);
             starterEgg.loftID = loftNumber;
             pigeonCollection.AddPigeon(starterEgg);
             pigeonController.SetupPigeon(starterEgg);

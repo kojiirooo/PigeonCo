@@ -11,6 +11,8 @@ public class SaveData
     public int premiumFeed;
     public int rings;
     public int wingbands;
+    public bool loft2Unlocked;
+    public bool loft3Unlocked;
 }
 
 public class SaveManager : MonoBehaviour
@@ -24,8 +26,10 @@ public class SaveManager : MonoBehaviour
     public int loadedPremiumFeed;
     public int loadedRings;
     public int loadedWingbands;
+    public bool loadedLoft2Unlocked;
+public bool loadedLoft3Unlocked;
 
-    public void Save(List<Pigeon> pigeons, int coins, int premiumFeed, int rings, int wingbands)
+    public void Save(List<Pigeon> pigeons, int coins, int premiumFeed, int rings, int wingbands, bool loft2, bool loft3)
     {
         SaveData data = new SaveData();
         data.pigeons = pigeons;
@@ -45,7 +49,7 @@ public class SaveManager : MonoBehaviour
     }
 
 
-    public void SaveLoft(List<Pigeon> loftPigeons, int loftNumber, int coins, int premiumFeed, int rings, int wingbands)
+    public void SaveLoft(List<Pigeon> loftPigeons, int loftNumber, int coins, int premiumFeed, int rings, int wingbands, bool loft2, bool loft3)
     {
         List<Pigeon> combined = new List<Pigeon>();
 
@@ -66,7 +70,7 @@ public class SaveManager : MonoBehaviour
         // Then add this loft's current pigeons
         combined.AddRange(loftPigeons);
 
-        Save(combined, coins, premiumFeed, rings, wingbands);
+        Save(combined, coins, premiumFeed, rings, wingbands, loft2, loft3);
     }
 
     public List<Pigeon> Load()
@@ -91,6 +95,8 @@ public class SaveManager : MonoBehaviour
         loadedPremiumFeed = data.premiumFeed;
         loadedRings = data.rings;
         loadedWingbands = data.wingbands;
+        loadedLoft2Unlocked = data.loft2Unlocked;
+        loadedLoft3Unlocked = data.loft3Unlocked;
         Debug.Log("Loaded " + data.pigeons.Count + " pigeon(s).");
         return data.pigeons;
     }

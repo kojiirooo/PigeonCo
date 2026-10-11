@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using TMPro;
 
 public class PigeonSelection : MonoBehaviour
 {
@@ -10,6 +11,9 @@ public class PigeonSelection : MonoBehaviour
     [SerializeField] private Button freeFlyButton;
     [SerializeField] private Button breedButton;
     [SerializeField] private Button raceButton;
+    [SerializeField] private TMP_Text freeFlyCooldownText;
+    [SerializeField] private TMP_Text breedCooldownText;
+    [SerializeField] private TMP_Text raceLockText;
 
     public PigeonController Selected { get; private set; }
 
@@ -92,10 +96,64 @@ public class PigeonSelection : MonoBehaviour
         Pigeon p = Selected.pigeonData;
         Pigeon mate = pigeonCollection.FindByID(p.mateID);
 
-        freeFlyButton.gameObject.SetActive(p.CanFreeFly());
-        breedButton.gameObject.SetActive(p.CanBreedWith(mate));
-        raceButton.gameObject.SetActive(pigeonCollection.CanRace(p));
+        bool isAdult = p.stage == LifeStage.Adult;
+        bool childrenGrown = !pigeonCollection.HasUnfinishedChildren(p);
+        bool hasBond = p.bond >= Pigeon.MaxBond;
+
+        // Free Fly
+        freeFlyButton.gameObject.SetActive(isAdult);
+        freeFlyButton.interactable = p.CanFreeFly() && childrenGrown;
+        SetStatusLabel(freeFlyCooldownText,
+            GetStatusText(childrenGrown, hasBond, "free fly", p.GetFreeFlyCooldownLeft()));
+
+        // Breed: both parents need full bond and finished cooldowns
+        bool mateHasBond = mate == null || mate.bond >= Pigeon.MaxBond;
+        System.TimeSpan breedLeft = p.GetBreedCooldownLeft();
+        if (mate != null && mate.GetBreedCooldownLeft() > breedLeft)
+        {
+            breedLeft = mate.GetBreedCooldownLeft();
+        }
+
+        breedButton.gameObject.SetActive(isAdult);
+        breedButton.interactable = p.CanBreedWith(mate) && childrenGrown;
+        SetStatusLabel(breedCooldownText,
+            GetStatusText(childrenGrown, hasBond && mateHasBond, "breed", breedLeft));
+
+        // Race
+        raceButton.gameObject.SetActive(isAdult);
+        raceButton.interactable = pigeonCollection.CanRace(p);
+        SetStatusLabel(raceLockText,
+            GetStatusText(childrenGrown, hasBond, "race", System.TimeSpan.Zero));
     }
+
+    private string GetStatusText(bool childrenGrown, bool hasBond, string action, System.TimeSpan cooldownLeft)
+    {
+        if (!childrenGrown)
+        {
+            return "Chicks growing";
+        }
+
+        if (!hasBond)
+        {
+            return "Need " + Pigeon.MaxBond + " bond to " + action;
+        }
+
+        if (cooldownLeft > System.TimeSpan.Zero)
+        {
+            return string.Format("Cooldown {0:00}:{1:00}", (int)cooldownLeft.TotalMinutes, cooldownLeft.Seconds);
+        }
+
+        return "";
+    }
+
+    private void SetStatusLabel(TMP_Text label, string text)
+    {
+        if (label != null)
+        {
+            label.text = text;
+        }
+    }
+
 
     private void OnFreeFlyPressed()
     {
