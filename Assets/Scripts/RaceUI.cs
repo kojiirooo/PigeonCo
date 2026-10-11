@@ -8,6 +8,7 @@ public class RaceUI : MonoBehaviour
     [SerializeField] private Button raceButton;
     [SerializeField] private TMP_Text coinsText;
     [SerializeField] private TMP_Text resultText;
+    [SerializeField] private RaceTrackUI raceTrack;
 
     void Start()
     {
@@ -31,9 +32,17 @@ public class RaceUI : MonoBehaviour
 
         // Use the current loft's opponents and prize
         int loft = pigeonCollection.loftNumber;
-        int place = RaceManager.RunRace(racer, loft);
+
+        RaceResult full = RaceManager.RunFullRace(racer, loft);
+        int place = full.place;
         int prize = RaceManager.GetPrize(place, loft);
         pigeonCollection.AddCoins(prize);
+
+        // Open the track right away
+        if (raceTrack != null)
+        {
+            raceTrack.ShowResult(full);
+        }
 
         string racerName = string.IsNullOrWhiteSpace(racer.pigeonName) ? "Your pigeon" : racer.pigeonName;
         resultText.text = racerName + " finished " + Ordinal(place) + "! +" + prize + " coins";
