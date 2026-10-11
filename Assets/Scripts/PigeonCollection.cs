@@ -8,6 +8,7 @@ public class PigeonCollection : MonoBehaviour
     public int loftNumber = 1;
     public bool loft2Unlocked = false;
     public bool loft3Unlocked = false;
+    public bool isLoaded = false;
 
     public bool IsLoftUnlocked(int loft)
     {
@@ -100,6 +101,21 @@ public class PigeonCollection : MonoBehaviour
         p.loftID = targetLoft;
         SaveGame();
         return true;
+    }
+
+    public bool CanMoveTo(Pigeon p, int targetLoft)
+    {
+        if (p == null || p.loftID == targetLoft)
+        {
+            return false;
+        }
+
+        if (p.stage == LifeStage.Egg || p.isAway)
+        {
+            return false;
+        }
+
+        return IsLoftUnlocked(targetLoft) && !IsLoftFull(targetLoft);
     }
 
     public void ReleasePigeon(Pigeon p)
@@ -291,6 +307,14 @@ public class PigeonCollection : MonoBehaviour
 
     public void SaveGame()
     {
+        // Don't save until GameTester has loaded the real values,
+        // or we could overwrite the save with empty defaults.
+        if (!isLoaded)
+        {
+            Debug.LogWarning("Save skipped: game has not finished loading yet.");
+            return;
+        }
+
         saveManager.SaveLoft(ownedPigeons, loftNumber, coins, premiumFeed, rings, wingbands, loft2Unlocked, loft3Unlocked);
     }
 

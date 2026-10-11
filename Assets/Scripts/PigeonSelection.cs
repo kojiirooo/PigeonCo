@@ -14,6 +14,10 @@ public class PigeonSelection : MonoBehaviour
     [SerializeField] private TMP_Text freeFlyCooldownText;
     [SerializeField] private TMP_Text breedCooldownText;
     [SerializeField] private TMP_Text raceLockText;
+    [SerializeField] private ReleaseConfirmUI releaseConfirm;
+    [SerializeField] private TMP_Text freeFlyButtonText;
+    [SerializeField] private Button moveButton;
+    [SerializeField] private MoveUI moveUI; 
 
     public PigeonController Selected { get; private set; }
 
@@ -26,6 +30,7 @@ public class PigeonSelection : MonoBehaviour
     {
         freeFlyButton.onClick.AddListener(OnFreeFlyPressed);
         breedButton.onClick.AddListener(OnBreedPressed);
+        moveButton.onClick.AddListener(OnMovePressed);
         HideAll();
     }
 
@@ -100,11 +105,24 @@ public class PigeonSelection : MonoBehaviour
         bool childrenGrown = !pigeonCollection.HasUnfinishedChildren(p);
         bool hasBond = p.bond >= Pigeon.MaxBond;
 
-        // Free Fly
+        // Free Fly, or Let Go for pigeons under full bond
+        bool lowBond = !hasBond;
+        bool freeFlyAllowed = lowBond ? (isAdult && !p.isAway) : p.CanFreeFly();
+
         freeFlyButton.gameObject.SetActive(isAdult);
-        freeFlyButton.interactable = p.CanFreeFly() && childrenGrown;
-        SetStatusLabel(freeFlyCooldownText,
-            GetStatusText(childrenGrown, hasBond, "free fly", p.GetFreeFlyCooldownLeft()));
+        freeFlyButton.interactable = freeFlyAllowed && childrenGrown;
+        SetButtonLabel(freeFlyButtonText, lowBond ? "Let Go" : "Free Fly");
+
+        string freeFlyStatus;
+        if (lowBond)
+        {
+            freeFlyStatus = childrenGrown ? "" : "Chicks growing";
+        }
+        else
+        {
+            freeFlyStatus = GetStatusText(childrenGrown, true, "free fly", p.GetFreeFlyCooldownLeft());
+        }
+        SetStatusLabel(freeFlyCooldownText, freeFlyStatus);
 
         // Breed: both parents need full bond and finished cooldowns
         bool mateHasBond = mate == null || mate.bond >= Pigeon.MaxBond;
@@ -124,6 +142,9 @@ public class PigeonSelection : MonoBehaviour
         raceButton.interactable = pigeonCollection.CanRace(p);
         SetStatusLabel(raceLockText,
             GetStatusText(childrenGrown, hasBond, "race", System.TimeSpan.Zero));
+        // Move: available for any pigeon that is not an egg and not away
+        moveButton.gameObject.SetActive(isAdult);
+        moveButton.interactable = p.stage != LifeStage.Egg && !p.isAway;
     }
 
     private string GetStatusText(bool childrenGrown, bool hasBond, string action, System.TimeSpan cooldownLeft)
@@ -154,13 +175,34 @@ public class PigeonSelection : MonoBehaviour
         }
     }
 
+    private void SetButtonLabel(TMP_Text label, string text)
+    {
+        if (label != null)
+        {
+            label.text = text;
+        }
+    }
 
     private void OnFreeFlyPressed()
     {
-        if (Selected == null) return;
+        if (Selected == null || Selected.pigeonData == null)
+        {
+            return;
+        }
+
+        Pigeon p = Selected.pigeonData;
+
+        if (p.bond < Pigeon.MaxBond)
+        {
+            // Low bond: offer to let the pigeon go instead
+            if (releaseConfirm != null)
+            {
+                releaseConfirm.Ask(p);
+            }
+            return;
+        }
 
         Selected.OnFreeFlyClicked();
-        Deselect();
     }
 
     private void OnBreedPressed()
@@ -170,10 +212,25 @@ public class PigeonSelection : MonoBehaviour
         Selected.OnBreedClicked();
         Deselect();
     }
+
+    private void OnMovePressed()
+    {
+        if (Selected == null || Selected.pigeonData == null)
+        {
+            return;
+        }
+
+        if (moveUI != null)
+        {
+            moveUI.Ask(Selected.pigeonData);
+        }
+    }
+
     private void HideAll()
     {
         freeFlyButton.gameObject.SetActive(false);
         breedButton.gameObject.SetActive(false);
         raceButton.gameObject.SetActive(false);
+        moveButton.gameObject.SetActive(false);
     }
 }

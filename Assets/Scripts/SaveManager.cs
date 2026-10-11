@@ -37,6 +37,8 @@ public bool loadedLoft3Unlocked;
         data.premiumFeed = premiumFeed;
         data.rings = rings;
         data.wingbands = wingbands;
+        data.loft2Unlocked = loft2;
+        data.loft3Unlocked = loft3;
 
         foreach (Pigeon p in data.pigeons)
         {

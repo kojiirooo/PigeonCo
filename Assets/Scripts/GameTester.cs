@@ -18,6 +18,7 @@ public class GameTester : MonoBehaviour
     {
         pigeonCollection.loftNumber = loftNumber;   
         List<Pigeon> all = saveManager.Load();
+        pigeonCollection.isLoaded = true;
 
         // Shared resources load for every loft
         if (all != null)
@@ -28,6 +29,7 @@ public class GameTester : MonoBehaviour
             pigeonCollection.wingbands = saveManager.loadedWingbands;
             pigeonCollection.loft2Unlocked = saveManager.loadedLoft2Unlocked;
             pigeonCollection.loft3Unlocked = saveManager.loadedLoft3Unlocked;
+            pigeonCollection.isLoaded = true;
         }
 
         // Only pigeons that belong to this loft
@@ -63,7 +65,7 @@ public class GameTester : MonoBehaviour
                 nursery2.SetupPigeon(loaded[3]);
             }
         }
-        else if (loftNumber == 1)
+        else if (all == null && loftNumber == 1)
         {
             // Only Loft 1 starts with the starter egg
             Pigeon starterEgg = new Pigeon("", "Grey", "Common Pigeon", LifeStage.Egg, BreedRarity.Common);

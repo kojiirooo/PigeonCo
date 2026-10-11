@@ -11,20 +11,25 @@ public class LoftUI : MonoBehaviour
     [SerializeField] private Button openLoftsButton;
     [SerializeField] private Button closeLoftsButton;
 
+    [SerializeField] private Button loft1Button;
     [SerializeField] private Button buyLoft2Button;
     [SerializeField] private Button buyLoft3Button;
+    [SerializeField] private TMP_Text loft1Text;
     [SerializeField] private TMP_Text loft2Text;
     [SerializeField] private TMP_Text loft3Text;
     [SerializeField] private TMP_Text messageText;
 
     [SerializeField] private GameObject loadingPanel;
+    [SerializeField] private Button mainMenuButton;
 
     void Start()
     {
         if (openLoftsButton != null) openLoftsButton.onClick.AddListener(OpenPanel);
         if (closeLoftsButton != null) closeLoftsButton.onClick.AddListener(ClosePanel);
+        if (loft1Button != null) loft1Button.onClick.AddListener(OnLoft1Clicked);
         if (buyLoft2Button != null) buyLoft2Button.onClick.AddListener(OnLoft2Clicked);
         if (buyLoft3Button != null) buyLoft3Button.onClick.AddListener(OnLoft3Clicked);
+        if (mainMenuButton != null) mainMenuButton.onClick.AddListener(GoToMainMenu);
 
         loftPanel.SetActive(false);
         if (loadingPanel != null) loadingPanel.SetActive(false);
@@ -40,6 +45,11 @@ public class LoftUI : MonoBehaviour
     private void ClosePanel()
     {
         loftPanel.SetActive(false);
+    }
+
+    private void OnLoft1Clicked()
+    {
+        HandleLoftButton(1);
     }
 
     private void OnLoft2Clicked()
@@ -82,6 +92,12 @@ public class LoftUI : MonoBehaviour
 
     private void GoToLoft(int loft)
     {
+        if (pigeonCollection.loftNumber == loft)
+        {
+            SetText(messageText, "You are already in Loft " + loft + ".");
+            return;
+        }
+
         SetText(messageText, "Loading Loft " + loft + "...");
 
         if (loadingPanel != null)
@@ -93,18 +109,59 @@ public class LoftUI : MonoBehaviour
         SceneManager.LoadScene("Loft" + loft);
     }
 
+    private void GoToMainMenu()
+    {
+        // Scene name must match Build Settings exactly
+        SceneManager.LoadScene("MainMenu");
+    }
+
     private void RefreshText()
     {
-        SetText(loft2Text, pigeonCollection.loft2Unlocked
-            ? "Loft 2: Open"
-            : "Loft 2: " + PigeonCollection.Loft2Cost + " coins");
+        RefreshLoft(loft1Text, loft1Button, 1, 0);
+        RefreshLoft(loft2Text, buyLoft2Button, 2, PigeonCollection.Loft2Cost);
+        RefreshLoft(loft3Text, buyLoft3Button, 3, PigeonCollection.Loft3Cost);
+    }
 
-        SetText(loft3Text, pigeonCollection.loft3Unlocked
-            ? "Loft 3: Open"
-            : "Loft 3: " + PigeonCollection.Loft3Cost + " coins");
+    private void RefreshLoft(TMP_Text label, Button button, int loft, int cost)
+    {
+        bool unlocked = pigeonCollection.IsLoftUnlocked(loft);
+        bool isCurrent = pigeonCollection.loftNumber == loft;
 
-        SetButtonLabel(buyLoft2Button, pigeonCollection.loft2Unlocked ? "Go to Loft 2" : "Buy Loft 2");
-        SetButtonLabel(buyLoft3Button, pigeonCollection.loft3Unlocked ? "Go to Loft 3" : "Buy Loft 3");
+        string status;
+        if (isCurrent)
+        {
+            status = "Loft " + loft + ": Current";
+        }
+        else if (unlocked)
+        {
+            status = "Loft " + loft + ": Open";
+        }
+        else
+        {
+            status = "Loft " + loft + ": " + cost + " coins";
+        }
+        SetText(label, status);
+
+        string buttonLabel;
+        if (isCurrent)
+        {
+            buttonLabel = "You are here";
+        }
+        else if (unlocked)
+        {
+            buttonLabel = "Go to Loft " + loft;
+        }
+        else
+        {
+            buttonLabel = "Buy Loft " + loft;
+        }
+        SetButtonLabel(button, buttonLabel);
+
+        // The loft you're standing in can't be pressed
+        if (button != null)
+        {
+            button.interactable = !isCurrent;
+        }
     }
 
     private void SetButtonLabel(Button button, string label)

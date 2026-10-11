@@ -18,25 +18,6 @@ public class RaceUI : MonoBehaviour
     void Update()
     {
         coinsText.text = "Coins: " + pigeonCollection.coins;
-        
-    }
-
-    private Pigeon FindRacer()
-    {
-        Pigeon best = null;
-
-        foreach (Pigeon p in pigeonCollection.ownedPigeons)
-        {
-            if (pigeonCollection.CanRace(p))
-            {
-                if (best == null || p.GetRating() > best.GetRating())
-                {
-                    best = p;
-                }
-            }
-        }
-
-        return best;
     }
 
     private void OnRaceClicked()
@@ -48,8 +29,10 @@ public class RaceUI : MonoBehaviour
             return;
         }
 
-        int place = RaceManager.RunRace(racer);
-        int prize = RaceManager.GetPrize(place);
+        // Use the current loft's opponents and prize
+        int loft = pigeonCollection.loftNumber;
+        int place = RaceManager.RunRace(racer, loft);
+        int prize = RaceManager.GetPrize(place, loft);
         pigeonCollection.AddCoins(prize);
 
         string racerName = string.IsNullOrWhiteSpace(racer.pigeonName) ? "Your pigeon" : racer.pigeonName;
