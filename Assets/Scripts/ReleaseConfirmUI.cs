@@ -12,6 +12,7 @@ public class ReleaseConfirmUI : MonoBehaviour
     [SerializeField] private Button noButton;
 
     private Pigeon pendingPigeon;
+    private bool pendingIsSale;   // NEW (Step 2): true = selling, false = letting go
 
     void Start()
     {
@@ -29,6 +30,7 @@ public class ReleaseConfirmUI : MonoBehaviour
         }
 
         pendingPigeon = p;
+        pendingIsSale = false;   // NEW (Step 2)
 
         string displayName = string.IsNullOrWhiteSpace(p.pigeonName) ? "this pigeon" : p.pigeonName;
 
@@ -40,11 +42,39 @@ public class ReleaseConfirmUI : MonoBehaviour
         confirmPanel.SetActive(true);
     }
 
+    // NEW (Step 2): called by PigeonSelection when the Sell button is pressed
+    public void AskSell(Pigeon p)
+    {
+        if (p == null)
+        {
+            return;
+        }
+
+        pendingPigeon = p;
+        pendingIsSale = true;
+
+        string displayName = string.IsNullOrWhiteSpace(p.pigeonName) ? "this pigeon" : p.pigeonName;
+
+        if (questionText != null)
+        {
+            questionText.text = "Sell " + displayName + " for " + pigeonCollection.GetSellPrice(p) + " coins? This cannot be undone.";
+        }
+
+        confirmPanel.SetActive(true);
+    }
+
     private void OnYesClicked()
     {
         if (pendingPigeon != null)
         {
-            pigeonCollection.ReleasePigeon(pendingPigeon);
+            if (pendingIsSale)   // NEW (Step 2)
+            {
+                pigeonCollection.SellPigeon(pendingPigeon);
+            }
+            else
+            {
+                pigeonCollection.ReleasePigeon(pendingPigeon);
+            }
         }
 
         pendingPigeon = null;

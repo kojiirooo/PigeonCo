@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+
 
 public class GameTester : MonoBehaviour
 {
@@ -14,8 +16,17 @@ public class GameTester : MonoBehaviour
     [Header("Loft")]
     [SerializeField] private int loftNumber = 1;
 
+
+
     void Start()
     {
+       
+        int fromName = ParseLoftNumber(SceneManager.GetActiveScene().name);
+        if (fromName > 0)
+        {
+            loftNumber = fromName;
+        }
+
         pigeonCollection.loftNumber = loftNumber;   
         List<Pigeon> all = saveManager.Load();
         pigeonCollection.isLoaded = true;
@@ -74,6 +85,21 @@ public class GameTester : MonoBehaviour
             pigeonController.SetupPigeon(starterEgg);
             pigeonCollection.SaveGame();
         }
+    }
+
+    private int ParseLoftNumber(string sceneName)
+    {
+        // "Loft2" -> 2. Any other name returns 0, so the field below is used instead.
+        if (sceneName.StartsWith("Loft"))
+        {
+            int number;
+            if (int.TryParse(sceneName.Substring(4), out number))
+            {
+                return number;
+            }
+        }
+
+        return 0;
     }
 
 

@@ -429,14 +429,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 0.9798266, b: 0.95660377, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 1008398135, guid: fee5da6154d9ebb4188015f31b1174b2, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 5fbf9f06b1ed1924b95f5c693b53893e, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -550,14 +550,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 0.9798266, b: 0.95660377, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 1008398135, guid: fee5da6154d9ebb4188015f31b1174b2, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 5fbf9f06b1ed1924b95f5c693b53893e, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -846,8 +846,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: 5fbf9f06b1ed1924b95f5c693b53893e, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -881,8 +881,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -874.8, y: 467.5}
-  m_SizeDelta: {x: 70, y: 70}
+  m_AnchoredPosition: {x: -831, y: 466.71}
+  m_SizeDelta: {x: 143.1836, y: 71.5918}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1010312592
 GameObject:
@@ -1236,14 +1236,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 0.9798266, b: 0.95660377, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 1008398135, guid: fee5da6154d9ebb4188015f31b1174b2, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 5fbf9f06b1ed1924b95f5c693b53893e, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1344,8 +1344,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: 5fbf9f06b1ed1924b95f5c693b53893e, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -1893,7 +1893,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: x
+  m_text: Back
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5302535af1044152a457ed104f1f4b91, type: 2}
   m_sharedMaterial: {fileID: 2164040, guid: 5302535af1044152a457ed104f1f4b91, type: 2}
@@ -2426,14 +2426,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 0.9798266, b: 0.95660377, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 1008398135, guid: fee5da6154d9ebb4188015f31b1174b2, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 5fbf9f06b1ed1924b95f5c693b53893e, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -2619,8 +2619,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1241.6313, y: 698.0676}
+  m_AnchoredPosition: {x: 23, y: 15}
+  m_SizeDelta: {x: 1434.0276, y: 930.947}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1907438385
 MonoBehaviour:
@@ -2642,10 +2642,47 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "How to Play\n\nFeed your pigeons to keep them healthy. \nHungry pigeons
-    can't bond or grow.\nBond with your pigeons to help them grow from eggs to adults.\nBreed
-    pigeons to create new ones.\nSend pigeons free flying and race them to earn coins.\nVisit
-    the Shop to buy Premium Feed, Rings, and Wingbands."
+  m_text: 'HOW TO PLAY
+
+
+    CARE
+
+    Click a pigeon to feed it. Drag over it to
+    pet it. Hungry pigeons turn grey and won''t bond, so feed first. Right-click
+    a pigeon to see its details.
+
+
+    GROW
+
+    Bond makes pigeons grow: Egg, Chick,
+    Young, Adult.
+
+
+    FREE FLY AND BREEDING
+
+    An adult with full bond can free
+    fly. When your first pigeon returns, it brings a mate. Bond with the mate, then
+    press Breed to get two eggs. Parents rest before breeding again.
+
+
+    RACE
+
+    Adults
+    with full bond can race. Better places earn more coins. Parents can''t race while
+    their chicks are growing.
+
+
+    SHOP
+
+    Spend coins on Premium Feed, Rings,
+    and Wingbands. Press Use, then click a pigeon.
+
+
+    LOFTS
+
+    Press Pigeons
+    to see your flock. Press Loft to unlock more lofts, and Move Pigeon to send a
+    pigeon to another loft. The game saves automatically.'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 3c9eb40c20ac81d4a89a4fef8fd44bff, type: 2}
   m_sharedMaterial: {fileID: -2257764796665481713, guid: 3c9eb40c20ac81d4a89a4fef8fd44bff, type: 2}
@@ -2672,7 +2709,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 66.7
+  m_fontSize: 40.45
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -2781,8 +2818,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: 5fbf9f06b1ed1924b95f5c693b53893e, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4

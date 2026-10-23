@@ -43,7 +43,7 @@ public class PigeonCollection : MonoBehaviour
     }
 
     [SerializeField] private SaveManager saveManager;
-  
+
     public int coins;
     public int premiumFeed;
     public bool premiumFeedArmed;
@@ -139,6 +139,36 @@ public class PigeonCollection : MonoBehaviour
         Debug.Log("Released " + p.pigeonName + ".");
     }
 
+
+    // NEW (Step 2): how many coins a pigeon is worth. Change the 2f to tune the economy.
+    public int GetSellPrice(Pigeon p)
+    {
+        return Mathf.RoundToInt(p.GetRating() * 2f);
+    }
+
+    // NEW (Step 2): only adults that are home can be sold, and a loft always keeps at least one pigeon
+    public bool CanSell(Pigeon p)
+    {
+        if (p == null || p.stage != LifeStage.Adult || p.isAway)
+        {
+            return false;
+        }
+
+        return ownedPigeons.Count > 1;
+    }
+
+    // NEW (Step 2): pay the player, then remove the pigeon (ReleasePigeon also saves)
+    public bool SellPigeon(Pigeon p)
+    {
+        if (!CanSell(p))
+        {
+            return false;
+        }
+
+        coins += GetSellPrice(p);
+        ReleasePigeon(p);
+        return true;
+    }
 
     public void AddPigeon(Pigeon newPigeon)
     {

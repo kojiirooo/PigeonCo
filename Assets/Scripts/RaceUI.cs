@@ -46,6 +46,7 @@ public class RaceUI : MonoBehaviour
 
         string racerName = string.IsNullOrWhiteSpace(racer.pigeonName) ? "Your pigeon" : racer.pigeonName;
         resultText.text = racerName + " finished " + Ordinal(place) + "! +" + prize + " coins";
+        GameMessage.Instance?.Show(racerName + " finished " + Ordinal(place) + "! +" + prize + " coins", 4f);
     }
 
     private string Ordinal(int place)

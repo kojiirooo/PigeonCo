@@ -34,11 +34,12 @@ public class PigeonController : MonoBehaviour
     [SerializeField] private Button breedButton;
 
     [Header("Info Panel")]
-    [SerializeField] private PigeonInfoPanel infoPanel; 
+    [SerializeField] private PigeonInfoPanel infoPanel;
 
     [Header("Petting")]
     [SerializeField] private float bondPerPixel = 0.02f;
     [SerializeField] private float tapMoveLimit = 10f;
+    [SerializeField] private float petBondAmount = 10f;
     [SerializeField] private float debugBond;
     [SerializeField] private float debugRating;
 
@@ -75,7 +76,6 @@ public class PigeonController : MonoBehaviour
             confirmButton.onClick.AddListener(OnConfirmClicked);
             breedButton.gameObject.SetActive(false);
             namePopup.SetActive(false);
-            
         }
     }
 
@@ -89,7 +89,9 @@ public class PigeonController : MonoBehaviour
             spriteRenderer.enabled = false;
         }
     }
+
     public bool IsStarter => isStarter;
+
     public void SetupPigeon(Pigeon data)
     {
         // IMPORTANT:
@@ -313,7 +315,6 @@ public class PigeonController : MonoBehaviour
         }
     }
 
-
     public void FeedPigeon()
     {
         if (pigeonData == null || pigeonData.stage == LifeStage.Egg || pigeonData.isAway)
@@ -323,6 +324,10 @@ public class PigeonController : MonoBehaviour
 
         pigeonData.Feed();
         SoundManager.Instance?.PlayFeed();
+        GameMessage.Instance?.Show(
+            pigeonData.pigeonName + " is fed. Hunger " +
+            Mathf.RoundToInt(pigeonData.GetCurrentHunger()) + "%"
+        );
         pigeonCollection.SaveGame();
     }
 
@@ -333,15 +338,34 @@ public class PigeonController : MonoBehaviour
             return;
         }
 
-        pigeonData.AddBond(5f);
+        float bondBefore = pigeonData.bond;
+        pigeonData.AddBond(petBondAmount);
+
+        // AddBond does nothing when the pigeon is hungry, so tell the player why
+        if (pigeonData.bond > bondBefore)
+        {
+            GameMessage.Instance?.Show(
+                pigeonData.pigeonName + " likes you. Bond " +
+                Mathf.RoundToInt(pigeonData.bond) + "/100"
+            );
+        }
+        else
+        {
+            GameMessage.Instance?.Show(pigeonData.pigeonName + " is too hungry to bond. Feed first.");
+        }
 
         if (pigeonData.TryGrow())
         {
             UpdateSprite();
+            GameMessage.Instance?.Show(
+                pigeonData.pigeonName + " has grown into a " + pigeonData.stage + "!",
+                4f
+            );
         }
 
         pigeonCollection.SaveGame();
     }
+
     void Update()
     {
         // Mate-test starts with no data.
@@ -350,8 +374,7 @@ public class PigeonController : MonoBehaviour
             return;
         }
 
-      
-        // EGG  
+        // EGG
         if (pigeonData.stage == LifeStage.Egg)
         {
             if (pigeonData.IsReadyToHatch())
@@ -360,7 +383,6 @@ public class PigeonController : MonoBehaviour
             }
         }
 
-       
         // AWAY / FREE FLYING
         else if (pigeonData.isAway)
         {
@@ -370,7 +392,6 @@ public class PigeonController : MonoBehaviour
             }
         }
 
-        
         // ACTIVE PIGEON
         else
         {
@@ -423,7 +444,6 @@ public class PigeonController : MonoBehaviour
         }
     }
 
-
     private void FollowHungerBar()
     {
         // Only move the bar when it's visible
@@ -450,8 +470,7 @@ public class PigeonController : MonoBehaviour
         FollowHungerBar();
     }
 
-
-        public void OnFreeFlyClicked()
+    public void OnFreeFlyClicked()
     {
         // Safety check.
         if (pigeonData == null)
@@ -473,7 +492,7 @@ public class PigeonController : MonoBehaviour
             spriteRenderer.enabled = false;
         }
 
-        Debug.Log($"{pigeonData.pigeonName} flew away!");
+        GameMessage.Instance?.Show(pigeonData.pigeonName + " flew away. Back in about 15 seconds.");
 
         pigeonCollection.SaveGame();
     }
@@ -487,7 +506,7 @@ public class PigeonController : MonoBehaviour
 
         hungerBar.gameObject.SetActive(true);
 
-        Debug.Log($"{pigeonData.pigeonName} came back!");
+        GameMessage.Instance?.Show(pigeonData.pigeonName + " is back!", 4f);
 
         // When the starter pigeon comes back,
         // bring its mate with it.
@@ -555,6 +574,8 @@ public class PigeonController : MonoBehaviour
         Debug.Log(
             $"A {mate.gender} mate arrived for {pigeonData.pigeonName}!"
         );
+
+        GameMessage.Instance?.Show("A mate arrived for " + pigeonData.pigeonName + "!", 4f);
     }
 
     public void OnBreedClicked()
@@ -590,6 +611,6 @@ public class PigeonController : MonoBehaviour
             breedButton.gameObject.SetActive(false);
         }
 
-        Debug.Log("Breeding complete: 2 eggs added.");
+        GameMessage.Instance?.Show(pigeonData.pigeonName + " and " + mate.pigeonName + " had 2 eggs!", 4f);
     }
 }

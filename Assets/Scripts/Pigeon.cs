@@ -66,12 +66,12 @@ public class Pigeon
     public const float MaxBond = 100f;
     public const float BondToBeYoung = 40f;
     public const float BondToBeAdult = 100f;
-    public const float FreeFlyMinutes = 0.1f;
+    public const float FreeFlyMinutes = 0.25f;
     public const float PremiumBondBonus = 10f;
     public const float RingRatingBonus = 10f;
     public const float WingbandRaceBonus = 10f;
-    public const float BreedCooldownMinutes = 2f;
-    public const float FreeFlyCooldownMinutes = 2f;
+    public const float BreedCooldownMinutes = 0.5f;
+    public const float FreeFlyCooldownMinutes = 0.5f;
 
 
 

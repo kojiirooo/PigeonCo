@@ -17,7 +17,8 @@ public class PigeonSelection : MonoBehaviour
     [SerializeField] private ReleaseConfirmUI releaseConfirm;
     [SerializeField] private TMP_Text freeFlyButtonText;
     [SerializeField] private Button moveButton;
-    [SerializeField] private MoveUI moveUI; 
+    [SerializeField] private Button sellButton;   // NEW (Step 2)
+    [SerializeField] private MoveUI moveUI;
 
     public PigeonController Selected { get; private set; }
 
@@ -31,6 +32,7 @@ public class PigeonSelection : MonoBehaviour
         freeFlyButton.onClick.AddListener(OnFreeFlyPressed);
         breedButton.onClick.AddListener(OnBreedPressed);
         moveButton.onClick.AddListener(OnMovePressed);
+        if (sellButton != null) sellButton.onClick.AddListener(OnSellPressed);   // NEW (Step 2)
         HideAll();
     }
 
@@ -145,6 +147,13 @@ public class PigeonSelection : MonoBehaviour
         // Move: available for any pigeon that is not an egg and not away
         moveButton.gameObject.SetActive(isAdult);
         moveButton.interactable = p.stage != LifeStage.Egg && !p.isAway;
+
+        // NEW (Step 2): Sell is shown for adults, and greyed out when selling isn't allowed
+        if (sellButton != null)
+        {
+            sellButton.gameObject.SetActive(isAdult);
+            sellButton.interactable = pigeonCollection.CanSell(p);
+        }
     }
 
     private string GetStatusText(bool childrenGrown, bool hasBond, string action, System.TimeSpan cooldownLeft)
@@ -226,11 +235,26 @@ public class PigeonSelection : MonoBehaviour
         }
     }
 
+    // NEW (Step 2)
+    private void OnSellPressed()
+    {
+        if (Selected == null || Selected.pigeonData == null)
+        {
+            return;
+        }
+
+        if (releaseConfirm != null)
+        {
+            releaseConfirm.AskSell(Selected.pigeonData);
+        }
+    }
+
     private void HideAll()
     {
         freeFlyButton.gameObject.SetActive(false);
         breedButton.gameObject.SetActive(false);
         raceButton.gameObject.SetActive(false);
         moveButton.gameObject.SetActive(false);
+        if (sellButton != null) sellButton.gameObject.SetActive(false);   // NEW (Step 2)
     }
 }
