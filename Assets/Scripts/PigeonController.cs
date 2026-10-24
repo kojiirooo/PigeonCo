@@ -50,6 +50,10 @@ public class PigeonController : MonoBehaviour
     [SerializeField] private PigeonController nursery1;
     [SerializeField] private PigeonController nursery2;
 
+    [Header("Name Label")]
+    [SerializeField] private TMP_Text nameLabel;  
+    [SerializeField] private Image colorChip;     
+
     private bool isPressing;
     private float dragDistance;
     private Vector3 lastMousePosition;
@@ -499,6 +503,16 @@ public class PigeonController : MonoBehaviour
 
         RectTransform barRect = hungerBar.transform as RectTransform;
         barRect.position = screenPos;
+
+        // NEW: keep the name and color square up to date
+        if (nameLabel != null)
+        {
+            nameLabel.text = string.IsNullOrWhiteSpace(pigeonData.pigeonName) ? "Unnamed" : pigeonData.pigeonName;
+        }
+        if (colorChip != null)
+        {
+            colorChip.color = ChipColor(pigeonData.pigeonColor);
+        }
     }
 
     void LateUpdate()
@@ -552,16 +566,16 @@ public class PigeonController : MonoBehaviour
 
         // When the starter pigeon comes back,
         // bring its mate with it.
+        bool broughtMate = false;
         if (isStarter)
         {
-            BringMate();
+            broughtMate = BringMate();
         }
 
-       
         bool hasRoom = pigeonCollection.CountPigeonsInLoft(pigeonCollection.loftNumber)
                        < pigeonCollection.GetCapacity(pigeonCollection.loftNumber);
 
-        if (hasRoom && Random.value < 0.25f)
+        if (!broughtMate && hasRoom && Random.value < 0.25f)
         {
             Pigeon wild = pigeonCollection.CreateWildPigeon();
             pigeonCollection.AddPigeon(wild);
@@ -573,14 +587,21 @@ public class PigeonController : MonoBehaviour
         }
     }
 
-    private void BringMate()
+    private bool BringMate()
     {
         // Don't create another mate if this pigeon
         // already has one.
         if (!string.IsNullOrWhiteSpace(pigeonData.mateID))
         {
-            return;
+            return false;
         }
+
+       
+        if (pigeonCollection.CountPigeonsInLoft(pigeonCollection.loftNumber) >= pigeonCollection.GetCapacity(pigeonCollection.loftNumber))
+        {
+            return false;
+        }
+
 
         // Create the mate.
         Pigeon mate = new Pigeon(
@@ -632,7 +653,10 @@ public class PigeonController : MonoBehaviour
             $"A {mate.gender} mate arrived for {pigeonData.pigeonName}!"
         );
 
+
+        
         GameMessage.Instance?.Show("A wild mate arrived for " + pigeonData.pigeonName + "!", 4f);
+        return true;
     }
 
     public void OnBreedClicked()
@@ -681,6 +705,15 @@ public class PigeonController : MonoBehaviour
             case "Black": return new Color(0.35f, 0.35f, 0.4f);
             default: return new Color(0.85f, 0.85f, 0.9f);   // Grey
         }
+    }
+
+    // NEW: the color shown in the little square
+    private Color ChipColor(string color)
+    {
+        if (color == "Brown") return new Color(0.55f, 0.35f, 0.2f);
+        if (color == "White") return Color.white;
+        if (color == "Black") return new Color(0.15f, 0.15f, 0.18f);
+        return new Color(0.6f, 0.6f, 0.65f);   // Grey
     }
 
 }

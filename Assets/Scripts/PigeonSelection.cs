@@ -116,6 +116,7 @@ public class PigeonSelection : MonoBehaviour
 
         freeFlyButton.gameObject.SetActive(isAdult);
         freeFlyButton.interactable = freeFlyAllowed && childrenGrown;
+        freeFlyButton.interactable = freeFlyButton.interactable && !p.isWild;
         SetButtonLabel(freeFlyButtonText, lowBond ? "Let Go" : "Free Fly");
 
         string freeFlyStatus;
