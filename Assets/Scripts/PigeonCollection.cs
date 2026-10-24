@@ -50,6 +50,8 @@ public class PigeonCollection : MonoBehaviour
     public const int PremiumFeedCost = 30;
     public int rings;
     public int wingbands;
+    public int reputation;
+    public List<string> discoveredColors = new List<string>();   
     public bool ringArmed;
     public bool wingbandArmed;
     public const int RingCost = 50;
@@ -140,13 +142,13 @@ public class PigeonCollection : MonoBehaviour
     }
 
 
-    // NEW (Step 2): how many coins a pigeon is worth. Change the 2f to tune the economy.
+    // how many coins a pigeon is worth.
     public int GetSellPrice(Pigeon p)
     {
         return Mathf.RoundToInt(p.GetRating() * 2f);
     }
 
-    // NEW (Step 2): only adults that are home can be sold, and a loft always keeps at least one pigeon
+    // only adults that are home can be sold, and a loft always keeps at least one pigeon
     public bool CanSell(Pigeon p)
     {
         if (p == null || p.stage != LifeStage.Adult || p.isAway)
@@ -157,7 +159,7 @@ public class PigeonCollection : MonoBehaviour
         return ownedPigeons.Count > 1;
     }
 
-    // NEW (Step 2): pay the player, then remove the pigeon (ReleasePigeon also saves)
+    //pay the player, then remove the pigeon (ReleasePigeon also saves)
     public bool SellPigeon(Pigeon p)
     {
         if (!CanSell(p))
@@ -168,6 +170,98 @@ public class PigeonCollection : MonoBehaviour
         coins += GetSellPrice(p);
         ReleasePigeon(p);
         return true;
+    }
+
+    //parents, children and siblings can't be paired
+    public bool AreRelated(Pigeon a, Pigeon b)
+    {
+        // Parent or child
+        if (a.pigeonID == b.parentAID || a.pigeonID == b.parentBID) return true;
+        if (b.pigeonID == a.parentAID || b.pigeonID == a.parentBID) return true;
+
+        return false;
+    }
+
+
+
+    //can these two adults be paired as mates?
+    public bool CanPair(Pigeon a, Pigeon b)
+    {
+        if (a == null || b == null || a == b) return false;
+        if (a.stage != LifeStage.Adult || b.stage != LifeStage.Adult) return false;
+        if (a.gender == b.gender) return false;
+        if (a.isAway || b.isAway) return false;
+        if (a.loftID != b.loftID) return false;
+        if (AreRelated(a, b)) return false;   
+        return true;
+    }
+
+    //link two pigeons, unlinking any old mates first
+    public void Pair(Pigeon a, Pigeon b)
+    {
+        Unpair(a);
+        Unpair(b);
+        a.mateID = b.pigeonID;
+        b.mateID = a.pigeonID;
+        SaveGame();
+    }
+
+    // NEW (Step 3): remove a pigeon's mate link, on both sides
+    public void Unpair(Pigeon p)
+    {
+        if (string.IsNullOrEmpty(p.mateID)) return;
+
+        Pigeon old = FindByID(p.mateID);
+        if (old != null && old.mateID == p.pigeonID)
+        {
+            old.mateID = "";
+        }
+        p.mateID = "";
+    }
+
+    // NEW (Step 3): the next eligible partner after the current one, or null if none
+    public Pigeon NextPartnerFor(Pigeon p)
+    {
+        List<Pigeon> options = new List<Pigeon>();
+        foreach (Pigeon other in ownedPigeons)
+        {
+            if (CanPair(p, other)) options.Add(other);
+        }
+
+        if (options.Count == 0) return null;
+
+        int index = options.FindIndex(o => o.pigeonID == p.mateID);
+        return options[(index + 1) % options.Count];
+    }
+
+  
+    public void AddReputation(int amount)
+    {
+        reputation += amount;
+        SaveGame();
+    }
+
+    public void CleanLoft()
+    {
+        foreach (Pigeon p in ownedPigeons)
+        {
+            if (p.loftID == loftNumber)
+            {
+                p.dirt = 0f;
+                p.hasCold = false;
+            }
+        }
+        SaveGame();
+    }
+
+    public Pigeon CreateWildPigeon()
+    {
+        Pigeon wild = new Pigeon("", "Grey", "Wild Pigeon", LifeStage.Adult, BreedRarity.Uncommon);
+        wild.isWild = true;
+        wild.tameSteps = 0;
+        wild.bond = 0f;
+        wild.hunger = 50f;
+        return wild;
     }
 
     public void AddPigeon(Pigeon newPigeon)
@@ -186,6 +280,24 @@ public class PigeonCollection : MonoBehaviour
         return null;
     }
 
+    // true if this loft has room for 2 more eggs
+    public bool CanBreedInLoft()
+    {
+        return CountPigeonsInLoft(loftNumber) + 2 <= GetCapacity(loftNumber);
+    }
+
+   
+    public static readonly string[] AllColors = { "Grey", "Brown", "White", "Black" };
+
+   
+    public void DiscoverColor(string color)
+    {
+        if (!discoveredColors.Contains(color))
+        {
+            discoveredColors.Add(color);
+        }
+    }
+
     public bool Breed(Pigeon a, Pigeon b)
     {
         // Breeding makes 2 eggs, so the loft needs room for 2 more pigeons
@@ -196,8 +308,16 @@ public class PigeonCollection : MonoBehaviour
         }
 
         for (int i = 0; i < 2; i++)
-        {
-            string color = (Random.value < 0.5f) ? a.pigeonColor : b.pigeonColor;
+        { 
+            string color;
+            if (Random.value < 0.8f)
+            {
+                color = (Random.value < 0.5f) ? a.pigeonColor : b.pigeonColor;
+            }
+            else
+            {
+                color = AllColors[Random.Range(0, AllColors.Length)];
+            }
             Pigeon egg = new Pigeon("", color, a.breedType, LifeStage.Egg, BreedRarity.Common);
             egg.parentAID = a.pigeonID;
             egg.parentBID = b.pigeonID;
@@ -214,7 +334,7 @@ public class PigeonCollection : MonoBehaviour
 
     public bool CanRace(Pigeon p)
     {
-        if (p.stage != LifeStage.Adult || p.isAway || p.bond < Pigeon.MaxBond)
+        if (p.stage != LifeStage.Adult || p.isAway || p.bond < Pigeon.MaxBond || p.hasCold || p.isWild)
         {
             return false;
         }
@@ -345,7 +465,7 @@ public class PigeonCollection : MonoBehaviour
             return;
         }
 
-        saveManager.SaveLoft(ownedPigeons, loftNumber, coins, premiumFeed, rings, wingbands, loft2Unlocked, loft3Unlocked);
+        saveManager.SaveLoft(ownedPigeons, loftNumber, coins, premiumFeed, rings, wingbands, loft2Unlocked, loft3Unlocked, reputation); 
     }
 
 

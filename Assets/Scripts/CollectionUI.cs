@@ -26,7 +26,15 @@ public class CollectionUI : MonoBehaviour
             string pigeonName = string.IsNullOrWhiteSpace(p.pigeonName) ? "(unnamed)" : p.pigeonName;
             text += pigeonName + "  -  " + p.stage + "  -  " + p.gender
                     + "  -  Rating " + Mathf.RoundToInt(p.GetRating())
-                    + (p.isAway ? "  (away)" : "") + "\n";
+                    + (p.isAway ? "  (away)" : "") + "\n"
+                    + (p.hasCold ? "  -  COLD" : "") + "\n";
+        }
+
+        
+        text += "\nColors found: " + pigeonCollection.discoveredColors.Count + " / " + PigeonCollection.AllColors.Length + "\n";
+        foreach (string c in PigeonCollection.AllColors)
+        {
+            text += (pigeonCollection.discoveredColors.Contains(c) ? "[x] " : "[ ] ") + c + "\n";
         }
 
         listText.text = text;

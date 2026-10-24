@@ -7,8 +7,10 @@ public class RaceUI : MonoBehaviour
     [SerializeField] private PigeonCollection pigeonCollection;
     [SerializeField] private Button raceButton;
     [SerializeField] private TMP_Text coinsText;
+    [SerializeField] private TMP_Text reputationText;
     [SerializeField] private TMP_Text resultText;
     [SerializeField] private RaceTrackUI raceTrack;
+   
 
     void Start()
     {
@@ -19,6 +21,12 @@ public class RaceUI : MonoBehaviour
     void Update()
     {
         coinsText.text = "Coins: " + pigeonCollection.coins;
+
+        
+        if (reputationText != null)
+        {
+            reputationText.text = "Rep : " + pigeonCollection.reputation;
+        }
     }
 
     private void OnRaceClicked()
@@ -37,6 +45,10 @@ public class RaceUI : MonoBehaviour
         int place = full.place;
         int prize = RaceManager.GetPrize(place, loft);
         pigeonCollection.AddCoins(prize);
+
+        //1st gets 10 reputation, 2nd gets 5, 3rd gets 2
+        int repGain = place == 1 ? 10 : place == 2 ? 5 : place == 3 ? 2 : 0;
+        if (repGain > 0) pigeonCollection.AddReputation(repGain);
 
         // Open the track right away
         if (raceTrack != null)

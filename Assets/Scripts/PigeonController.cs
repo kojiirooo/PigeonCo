@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 
 public class PigeonController : MonoBehaviour
@@ -159,6 +160,8 @@ public class PigeonController : MonoBehaviour
             pigeonData.pigeonName = "Pigeon " + number;
         }
 
+        
+        pigeonCollection.DiscoverColor(pigeonData.pigeonColor);
         hungerBar.gameObject.SetActive(true);
 
         pigeonCollection.SaveGame();
@@ -322,6 +325,28 @@ public class PigeonController : MonoBehaviour
             return;
         }
 
+        if (pigeonData.isWild)
+        {
+            pigeonData.hunger = 100f;
+            pigeonData.lastFedTime = System.DateTime.Now;
+            pigeonData.tameSteps++;
+            if (pigeonData.tameSteps >= Pigeon.TameStepsNeeded)
+            {
+                pigeonData.isWild = false;
+                pigeonData.stage = LifeStage.Chick;
+                pigeonData.bond = 0f;
+                if (string.IsNullOrWhiteSpace(pigeonData.pigeonName)) pigeonData.pigeonName = "Wild " + pigeonCollection.ownedPigeons.IndexOf(pigeonData);
+                GameMessage.Instance?.Show(pigeonData.pigeonName + " is tamed!", 4f);
+            }
+            else
+            {
+                GameMessage.Instance?.Show("Tame " + pigeonData.tameSteps + "/" + Pigeon.TameStepsNeeded, 2f);
+            }
+            pigeonCollection.SaveGame();
+            return;
+        }
+
+
         pigeonData.Feed();
         SoundManager.Instance?.PlayFeed();
         GameMessage.Instance?.Show(
@@ -412,6 +437,24 @@ public class PigeonController : MonoBehaviour
             {
                 spriteRenderer.color = Color.white;
             }
+
+            
+            if (pigeonData.UpdateDirt(Time.deltaTime))
+            {
+                GameMessage.Instance?.Show(pigeonData.pigeonName + " caught a cold! Clean the loft.", 4f);
+                pigeonCollection.SaveGame();
+            }
+           
+            if (!pigeonData.hasCold)
+            {
+                spriteRenderer.color = ColorTint(pigeonData.pigeonColor);
+            }
+
+            if (pigeonData.hasCold)
+            {
+                spriteRenderer.color = new Color(0.6f, 0.8f, 1f);
+            }
+
 
             // Only chicks and up wander, and only when not being pressed
             if (canWander && !isPressing)
@@ -515,7 +558,20 @@ public class PigeonController : MonoBehaviour
             BringMate();
         }
 
-        pigeonCollection.SaveGame();
+       
+        bool hasRoom = pigeonCollection.CountPigeonsInLoft(pigeonCollection.loftNumber)
+                       < pigeonCollection.GetCapacity(pigeonCollection.loftNumber);
+
+        if (hasRoom && Random.value < 0.25f)
+        {
+            Pigeon wild = pigeonCollection.CreateWildPigeon();
+            pigeonCollection.AddPigeon(wild);
+            pigeonCollection.SaveGame();
+
+            // Reload so GameTester puts the wild pigeon on a visible slot
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            return;
+        }
     }
 
     private void BringMate()
@@ -589,7 +645,7 @@ public class PigeonController : MonoBehaviour
 
         if (!pigeonCollection.Breed(pigeonData, mate))
         {
-            Debug.Log("This loft is full. Move a pigeon out or unlock another loft first.");
+            GameMessage.Instance?.Show("Loft full! Move a pigeon to another loft, or breed in a loft with room."); 
             return;
         }
 
@@ -613,4 +669,17 @@ public class PigeonController : MonoBehaviour
 
         GameMessage.Instance?.Show(pigeonData.pigeonName + " and " + mate.pigeonName + " had 2 eggs!", 4f);
     }
+
+    
+    private Color ColorTint(string color)
+    {
+        switch (color)
+        {
+            case "Brown": return new Color(0.75f, 0.55f, 0.35f);
+            case "White": return Color.white;
+            case "Black": return new Color(0.35f, 0.35f, 0.4f);
+            default: return new Color(0.85f, 0.85f, 0.9f);   // Grey
+        }
+    }
+
 }

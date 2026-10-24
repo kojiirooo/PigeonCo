@@ -36,7 +36,7 @@ public class LoftUI : MonoBehaviour
         SetText(messageText, "");
     }
 
-    private void OpenPanel()
+    public void OpenPanel()
     {
         RefreshText();
         loftPanel.SetActive(true);

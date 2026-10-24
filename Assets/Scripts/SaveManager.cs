@@ -11,8 +11,10 @@ public class SaveData
     public int premiumFeed;
     public int rings;
     public int wingbands;
+    public int reputation;
     public bool loft2Unlocked;
     public bool loft3Unlocked;
+    
 }
 
 public class SaveManager : MonoBehaviour
@@ -27,9 +29,10 @@ public class SaveManager : MonoBehaviour
     public int loadedRings;
     public int loadedWingbands;
     public bool loadedLoft2Unlocked;
-public bool loadedLoft3Unlocked;
+    public bool loadedLoft3Unlocked;
+    public int loadedReputation;
 
-    public void Save(List<Pigeon> pigeons, int coins, int premiumFeed, int rings, int wingbands, bool loft2, bool loft3)
+    public void Save(List<Pigeon> pigeons, int coins, int premiumFeed, int rings, int wingbands, bool loft2, bool loft3, int reputation)
     {
         SaveData data = new SaveData();
         data.pigeons = pigeons;
@@ -39,6 +42,7 @@ public bool loadedLoft3Unlocked;
         data.wingbands = wingbands;
         data.loft2Unlocked = loft2;
         data.loft3Unlocked = loft3;
+        data.reputation = reputation;   
 
         foreach (Pigeon p in data.pigeons)
         {
@@ -51,7 +55,7 @@ public bool loadedLoft3Unlocked;
     }
 
 
-    public void SaveLoft(List<Pigeon> loftPigeons, int loftNumber, int coins, int premiumFeed, int rings, int wingbands, bool loft2, bool loft3)
+    public void SaveLoft(List<Pigeon> loftPigeons, int loftNumber, int coins, int premiumFeed, int rings, int wingbands, bool loft2, bool loft3, int reputation)
     {
         List<Pigeon> combined = new List<Pigeon>();
 
@@ -72,7 +76,7 @@ public bool loadedLoft3Unlocked;
         // Then add this loft's current pigeons
         combined.AddRange(loftPigeons);
 
-        Save(combined, coins, premiumFeed, rings, wingbands, loft2, loft3);
+        Save(combined, coins, premiumFeed, rings, wingbands, loft2, loft3, reputation);
     }
 
     public List<Pigeon> Load()
@@ -99,6 +103,7 @@ public bool loadedLoft3Unlocked;
         loadedWingbands = data.wingbands;
         loadedLoft2Unlocked = data.loft2Unlocked;
         loadedLoft3Unlocked = data.loft3Unlocked;
+        loadedReputation = data.reputation;   
         Debug.Log("Loaded " + data.pigeons.Count + " pigeon(s).");
         return data.pigeons;
     }

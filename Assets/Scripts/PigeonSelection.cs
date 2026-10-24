@@ -17,7 +17,9 @@ public class PigeonSelection : MonoBehaviour
     [SerializeField] private ReleaseConfirmUI releaseConfirm;
     [SerializeField] private TMP_Text freeFlyButtonText;
     [SerializeField] private Button moveButton;
-    [SerializeField] private Button sellButton;   // NEW (Step 2)
+    [SerializeField] private Button sellButton;
+    [SerializeField] private LoftUI loftUI;   
+    [SerializeField] private Button pairButton;   
     [SerializeField] private MoveUI moveUI;
 
     public PigeonController Selected { get; private set; }
@@ -32,7 +34,8 @@ public class PigeonSelection : MonoBehaviour
         freeFlyButton.onClick.AddListener(OnFreeFlyPressed);
         breedButton.onClick.AddListener(OnBreedPressed);
         moveButton.onClick.AddListener(OnMovePressed);
-        if (sellButton != null) sellButton.onClick.AddListener(OnSellPressed);   // NEW (Step 2)
+        if (sellButton != null) sellButton.onClick.AddListener(OnSellPressed);
+        if (pairButton != null) pairButton.onClick.AddListener(OnPairPressed);
         HideAll();
     }
 
@@ -136,6 +139,13 @@ public class PigeonSelection : MonoBehaviour
 
         breedButton.gameObject.SetActive(isAdult);
         breedButton.interactable = p.CanBreedWith(mate) && childrenGrown;
+
+        //if the loft has no room for 2 eggs, say so
+        if (!pigeonCollection.CanBreedInLoft())
+        {
+            SetStatusLabel(breedCooldownText, "Loft full");
+        }
+
         SetStatusLabel(breedCooldownText,
             GetStatusText(childrenGrown, hasBond && mateHasBond, "breed", breedLeft));
 
@@ -148,11 +158,17 @@ public class PigeonSelection : MonoBehaviour
         moveButton.gameObject.SetActive(isAdult);
         moveButton.interactable = p.stage != LifeStage.Egg && !p.isAway;
 
-        // NEW (Step 2): Sell is shown for adults, and greyed out when selling isn't allowed
+        
         if (sellButton != null)
         {
             sellButton.gameObject.SetActive(isAdult);
             sellButton.interactable = pigeonCollection.CanSell(p);
+        }
+
+        
+        if (pairButton != null)
+        {
+            pairButton.gameObject.SetActive(isAdult);
         }
     }
 
@@ -218,6 +234,14 @@ public class PigeonSelection : MonoBehaviour
     {
         if (Selected == null) return;
 
+        
+        if (!pigeonCollection.CanBreedInLoft() && loftUI != null)
+        {
+            loftUI.OpenPanel();
+            GameMessage.Instance?.Show("Loft full! Buy Loft 2, then move a pigeon there to breed.");
+            return;
+        }
+
         Selected.OnBreedClicked();
         Deselect();
     }
@@ -249,12 +273,32 @@ public class PigeonSelection : MonoBehaviour
         }
     }
 
+   
+    private void OnPairPressed()
+    {
+        if (Selected == null || Selected.pigeonData == null) return;
+
+        Pigeon p = Selected.pigeonData;
+        Pigeon next = pigeonCollection.NextPartnerFor(p);
+
+        if (next == null)
+        {
+            pigeonCollection.Unpair(p);
+            GameMessage.Instance?.Show("No partner available. Needs an adult of the other gender in this loft.");
+            return;
+        }
+
+        pigeonCollection.Pair(p, next);
+        GameMessage.Instance?.Show(p.pigeonName + " is paired with " + next.pigeonName + ".");
+    }
+
     private void HideAll()
     {
         freeFlyButton.gameObject.SetActive(false);
         breedButton.gameObject.SetActive(false);
         raceButton.gameObject.SetActive(false);
         moveButton.gameObject.SetActive(false);
-        if (sellButton != null) sellButton.gameObject.SetActive(false);   // NEW (Step 2)
+        if (sellButton != null) sellButton.gameObject.SetActive(false);
+        if (pairButton != null) pairButton.gameObject.SetActive(false); 
     }
 }

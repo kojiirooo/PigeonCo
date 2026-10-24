@@ -55,7 +55,10 @@ public class Pigeon
     public string returnTimeText;   
     public float hunger;
     public float bond;
-    
+    public float dirt;
+    public bool hasCold;
+    public bool isWild;        
+    public int tameSteps;      
     public float pigeonRating;
     
 
@@ -72,6 +75,8 @@ public class Pigeon
     public const float WingbandRaceBonus = 10f;
     public const float BreedCooldownMinutes = 0.5f;
     public const float FreeFlyCooldownMinutes = 0.5f;
+    public const float DirtPerMinute = 20f;   
+    public const float ColdThreshold = 75f;  
 
 
 
@@ -267,6 +272,24 @@ public class Pigeon
         lastBredTime = ParseSavedTime(lastBredTimeText);
         lastFreeFlyTime = ParseSavedTime(lastFreeFlyTimeText);
     }
+
+    public bool UpdateDirt(float seconds)
+    {
+        if (stage == LifeStage.Egg || isAway) return false;
+
+        dirt = Mathf.Min(100f, dirt + DirtPerMinute * seconds / 60f);
+
+        if (!hasCold && dirt >= ColdThreshold)
+        {
+            hasCold = true;
+            return true;
+        }
+
+        return false;
+    }
+
+    
+    public const int TameStepsNeeded = 3;
 
     public bool CanBreedWith(Pigeon other)
     {

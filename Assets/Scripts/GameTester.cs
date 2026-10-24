@@ -40,6 +40,7 @@ public class GameTester : MonoBehaviour
             pigeonCollection.wingbands = saveManager.loadedWingbands;
             pigeonCollection.loft2Unlocked = saveManager.loadedLoft2Unlocked;
             pigeonCollection.loft3Unlocked = saveManager.loadedLoft3Unlocked;
+            pigeonCollection.reputation = saveManager.loadedReputation;
             pigeonCollection.isLoaded = true;
         }
 
