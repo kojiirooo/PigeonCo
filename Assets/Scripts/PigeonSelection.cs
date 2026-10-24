@@ -273,12 +273,22 @@ public class PigeonSelection : MonoBehaviour
         }
     }
 
-   
+
     private void OnPairPressed()
     {
         if (Selected == null || Selected.pigeonData == null) return;
 
         Pigeon p = Selected.pigeonData;
+
+        // NEW (Step 2): a paired pigeon is locked to its partner
+        if (!string.IsNullOrEmpty(p.mateID))
+        {
+            Pigeon currentMate = pigeonCollection.FindByID(p.mateID);
+            string mateName = currentMate != null ? currentMate.pigeonName : "its partner";
+            GameMessage.Instance?.Show(p.pigeonName + " is already paired with " + mateName + ". Sell or release that partner to change.", 4f);
+            return;
+        }
+
         Pigeon next = pigeonCollection.NextPartnerFor(p);
 
         if (next == null)

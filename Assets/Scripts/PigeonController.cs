@@ -333,7 +333,6 @@ public class PigeonController : MonoBehaviour
             if (pigeonData.tameSteps >= Pigeon.TameStepsNeeded)
             {
                 pigeonData.isWild = false;
-                pigeonData.stage = LifeStage.Chick;
                 pigeonData.bond = 0f;
                 if (string.IsNullOrWhiteSpace(pigeonData.pigeonName)) pigeonData.pigeonName = "Wild " + pigeonCollection.ownedPigeons.IndexOf(pigeonData);
                 GameMessage.Instance?.Show(pigeonData.pigeonName + " is tamed!", 4f);
@@ -604,6 +603,8 @@ public class PigeonController : MonoBehaviour
 
         // The mate starts with no bond. Pet it to build bond.
         mate.bond = 0f;
+        mate.isWild = true;    
+        mate.tameSteps = 0;    
 
         // Mark the mate as having free-flown before.
         mate.hasFreeFlown = false;
@@ -631,7 +632,7 @@ public class PigeonController : MonoBehaviour
             $"A {mate.gender} mate arrived for {pigeonData.pigeonName}!"
         );
 
-        GameMessage.Instance?.Show("A mate arrived for " + pigeonData.pigeonName + "!", 4f);
+        GameMessage.Instance?.Show("A wild mate arrived for " + pigeonData.pigeonName + "!", 4f);
     }
 
     public void OnBreedClicked()

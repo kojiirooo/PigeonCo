@@ -8316,6 +8316,8 @@ MonoBehaviour:
     bond: 0
     dirt: 0
     hasCold: 0
+    isWild: 0
+    tameSteps: 0
     pigeonRating: 0
   spriteRenderer: {fileID: 856623335}
   eggSprite: {fileID: -512208390, guid: d181523abf1284c4aac3491558d17ae6, type: 3}
@@ -9859,6 +9861,8 @@ MonoBehaviour:
     bond: 0
     dirt: 0
     hasCold: 0
+    isWild: 0
+    tameSteps: 0
     pigeonRating: 0
   spriteRenderer: {fileID: 1073274019}
   eggSprite: {fileID: -512208390, guid: d181523abf1284c4aac3491558d17ae6, type: 3}
@@ -14887,6 +14891,8 @@ MonoBehaviour:
     bond: 0
     dirt: 0
     hasCold: 0
+    isWild: 0
+    tameSteps: 0
     pigeonRating: 0
   spriteRenderer: {fileID: 1671888817}
   eggSprite: {fileID: -512208390, guid: d181523abf1284c4aac3491558d17ae6, type: 3}
@@ -17685,6 +17691,8 @@ MonoBehaviour:
     bond: 0
     dirt: 0
     hasCold: 0
+    isWild: 0
+    tameSteps: 0
     pigeonRating: 0
   spriteRenderer: {fileID: 1960901845}
   eggSprite: {fileID: -512208390, guid: d181523abf1284c4aac3491558d17ae6, type: 3}
@@ -18594,6 +18602,7 @@ MonoBehaviour:
   rings: 0
   wingbands: 0
   reputation: 0
+  discoveredColors: []
   ringArmed: 0
   wingbandArmed: 0
 --- !u!4 &2046699949
