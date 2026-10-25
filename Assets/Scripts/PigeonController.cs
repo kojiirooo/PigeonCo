@@ -81,6 +81,8 @@ public class PigeonController : MonoBehaviour
             confirmButton.onClick.AddListener(OnConfirmClicked);
             breedButton.gameObject.SetActive(false);
             namePopup.SetActive(false);
+            sharedNamePopup = namePopup;
+            sharedNameInput = nameInput;
         }
     }
 
@@ -96,6 +98,19 @@ public class PigeonController : MonoBehaviour
     }
 
     public bool IsStarter => isStarter;
+    private static GameObject sharedNamePopup;
+    private static TMP_InputField sharedNameInput;
+    private static PigeonController namingTarget;
+
+    private void AskForName()
+    {
+        if (sharedNamePopup == null) return;
+
+        namingTarget = this;
+        if (sharedNameInput != null) sharedNameInput.text = "";
+        sharedNamePopup.SetActive(true);
+    }
+
 
     public void SetupPigeon(Pigeon data)
     {
@@ -156,7 +171,7 @@ public class PigeonController : MonoBehaviour
         // Only the starter pigeon should use the naming popup.
         if (isStarter)
         {
-            namePopup.SetActive(true);
+            AskForName();
         }
         else
         {
@@ -180,13 +195,14 @@ public class PigeonController : MonoBehaviour
             return;
         }
 
-        pigeonData.pigeonName = typedName;
+        
+        PigeonController target = namingTarget != null ? namingTarget : this;
+        target.pigeonData.pigeonName = typedName;
+        namingTarget = null;
 
         namePopup.SetActive(false);
-
         pigeonCollection.SaveGame();
-
-        Debug.Log($"Pigeon named: {pigeonData.pigeonName}");
+        Debug.Log($"Pigeon named: {typedName}");
     }
 
     private void OnMouseOver()
@@ -213,6 +229,15 @@ public class PigeonController : MonoBehaviour
         {
             return;
         }
+
+        
+        if (pigeonData.isWild)
+        {
+            GameMessage.Instance?.Show("It's wild! Feed it 3 times to tame it first.");
+            return;
+        }
+
+
 
         infoPanel.Show(this);
     }
@@ -338,8 +363,8 @@ public class PigeonController : MonoBehaviour
             {
                 pigeonData.isWild = false;
                 pigeonData.bond = 0f;
-                if (string.IsNullOrWhiteSpace(pigeonData.pigeonName)) pigeonData.pigeonName = "Wild " + pigeonCollection.ownedPigeons.IndexOf(pigeonData);
-                GameMessage.Instance?.Show(pigeonData.pigeonName + " is tamed!", 4f);
+                GameMessage.Instance?.Show("Tamed! Now give it a name.", 4f);
+                AskForName();
             }
             else
             {
@@ -504,10 +529,17 @@ public class PigeonController : MonoBehaviour
         RectTransform barRect = hungerBar.transform as RectTransform;
         barRect.position = screenPos;
 
-        // NEW: keep the name and color square up to date
+       
         if (nameLabel != null)
         {
-            nameLabel.text = string.IsNullOrWhiteSpace(pigeonData.pigeonName) ? "Unnamed" : pigeonData.pigeonName;
+            if (pigeonData.isWild)
+            {
+                nameLabel.text = "Wild pigeon";
+            }
+            else
+            {
+                nameLabel.text = string.IsNullOrWhiteSpace(pigeonData.pigeonName) ? "Unnamed" : pigeonData.pigeonName;
+            }
         }
         if (colorChip != null)
         {
@@ -589,14 +621,14 @@ public class PigeonController : MonoBehaviour
 
     private bool BringMate()
     {
-        // Don't create another mate if this pigeon
-        // already has one.
-        if (!string.IsNullOrWhiteSpace(pigeonData.mateID))
+
+
+        if (pigeonCollection.CountPigeonsInLoft(pigeonCollection.loftNumber) > 1)
         {
             return false;
         }
 
-       
+
         if (pigeonCollection.CountPigeonsInLoft(pigeonCollection.loftNumber) >= pigeonCollection.GetCapacity(pigeonCollection.loftNumber))
         {
             return false;
@@ -629,10 +661,6 @@ public class PigeonController : MonoBehaviour
 
         // Mark the mate as having free-flown before.
         mate.hasFreeFlown = false;
-
-        // Connect the two pigeons.
-        mate.mateID = pigeonData.pigeonID;
-        pigeonData.mateID = mate.pigeonID;
 
         // Save the new mate.
         pigeonCollection.AddPigeon(mate);

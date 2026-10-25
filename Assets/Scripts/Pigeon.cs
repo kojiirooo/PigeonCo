@@ -169,7 +169,7 @@ public class Pigeon
 
     public void AddBond(float amount)
     {
-        if (stage == LifeStage.Egg || IsHungry())
+        if (stage == LifeStage.Egg || IsHungry() || isWild)
         {
             return;
         }
