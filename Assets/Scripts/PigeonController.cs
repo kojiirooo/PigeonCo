@@ -83,6 +83,8 @@ public class PigeonController : MonoBehaviour
             namePopup.SetActive(false);
             sharedNamePopup = namePopup;
             sharedNameInput = nameInput;
+            namingQueue.Clear();
+            namingTarget = null;
         }
     }
 
@@ -101,12 +103,34 @@ public class PigeonController : MonoBehaviour
     private static GameObject sharedNamePopup;
     private static TMP_InputField sharedNameInput;
     private static PigeonController namingTarget;
+    private static readonly Queue<PigeonController> namingQueue = new Queue<PigeonController>();
 
     private void AskForName()
     {
-        if (sharedNamePopup == null) return;
+        // No popup in this scene: fall back to a default name
+        if (sharedNamePopup == null)
+        {
+            if (string.IsNullOrWhiteSpace(pigeonData.pigeonName))
+            {
+                pigeonData.pigeonName = "Pigeon " + (pigeonCollection.ownedPigeons.IndexOf(pigeonData) + 1);
+            }
+            return;
+        }
 
-        namingTarget = this;
+        namingQueue.Enqueue(this);
+
+        // If the popup is already open for another pigeon, this one waits its turn
+        if (!sharedNamePopup.activeSelf)
+        {
+            ShowNextNamePopup();
+        }
+    }
+
+    private static void ShowNextNamePopup()
+    {
+        if (namingQueue.Count == 0) return;
+
+        namingTarget = namingQueue.Dequeue();
         if (sharedNameInput != null) sharedNameInput.text = "";
         sharedNamePopup.SetActive(true);
     }
@@ -167,19 +191,8 @@ public class PigeonController : MonoBehaviour
         pigeonData.lastFedTime = System.DateTime.Now;
 
         UpdateSprite();
+        AskForName();
 
-        // Only the starter pigeon should use the naming popup.
-        if (isStarter)
-        {
-            AskForName();
-        }
-        else
-        {
-            int number = pigeonCollection.ownedPigeons.IndexOf(pigeonData) + 1;
-            pigeonData.pigeonName = "Pigeon " + number;
-        }
-
-        
         pigeonCollection.DiscoverColor(pigeonData.pigeonColor);
         hungerBar.gameObject.SetActive(true);
 
@@ -203,6 +216,7 @@ public class PigeonController : MonoBehaviour
         namePopup.SetActive(false);
         pigeonCollection.SaveGame();
         Debug.Log($"Pigeon named: {typedName}");
+        ShowNextNamePopup();  
     }
 
     private void OnMouseOver()
